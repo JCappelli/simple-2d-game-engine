@@ -5,7 +5,8 @@
             "includePath": [
                 "${workspaceFolder}/**",
                 "${workspaceFolder}/lib/SDL/Windows/include/**",
-                "${workspaceFolder}/lib/SDL/Windows/lib/"
+                "${workspaceFolder}/lib/SDL/Windows/lib/",
+                "${workspaceFolder}/lib/Lua/Windows/include/**"
             ],
             "defines": [
                 "_DEBUG",
