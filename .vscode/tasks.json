@@ -4,11 +4,18 @@
 		{
 			"type": "cppbuild",
 			"label": "C/C++: cpp.exe build main",
-			"command": "g++",
+			"command": "g++.exe",
 			"args": [
-				"${workspaceFolder}\\src\\main.cpp",
+				"-Wall",
+				"-std=c++17",
+				"-I${workspaceFolder}\\lib\\SDL\\Windows\\include",
+				"-L${workspaceFolder}\\lib\\SDL\\Windows\\lib",
 				"-o",
-				"${workspaceFolder}\\build\\test.exe"
+				"${workspaceFolder}\\build\\test.exe",
+				"${workspaceFolder}\\src\\main.cpp",
+				"-lmingw32",
+				"-lSDL2main",
+				"-lSDL2",
 			],
 			"problemMatcher": [
 				"$gcc"
