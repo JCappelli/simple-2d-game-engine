@@ -6,7 +6,6 @@
 #include <glm/glm.hpp>
 #include <imgui/imgui.h>
 #include <sol/sol.hpp>
-#include <string_view>
 
 int main(int argc, char *argv[])
 {

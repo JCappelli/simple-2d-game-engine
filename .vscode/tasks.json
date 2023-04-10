@@ -6,7 +6,6 @@
 			"label": "Windows Build with gcc",
 			"command": "g++.exe",
 			"args": [
-				"-v",
 				"-std=c++17",
 				"-Wall",
 				"-I${workspaceFolder}\\lib\\SDL\\Windows\\include",
