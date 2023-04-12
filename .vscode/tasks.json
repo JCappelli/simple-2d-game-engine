@@ -2,28 +2,11 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
-			"type": "cppbuild",
+			"type": "shell",
 			"label": "Windows Build with gcc",
-			"command": "g++.exe",
+			"command": "./windows_build.bat",
 			"args": [
-				"-std=c++17",
-				"-Wall",
-				"-I${workspaceFolder}\\lib\\SDL\\Windows\\include",
-				"-I${workspaceFolder}\\lib\\Lua\\Windows\\include",
-				"-I${workspaceFolder}\\lib\\",
-				"-I${workspaceFolder}\\lib\\sol",
-				"-L${workspaceFolder}\\lib\\SDL\\Windows\\lib",
-				"-L${workspaceFolder}\\lib\\Lua\\Windows",
-				"-o",
-				"${workspaceFolder}\\build\\test.exe",
-				"${workspaceFolder}\\src\\main.cpp",
-				"-lmingw32",
-				"-lSDL2main",
-				"-lSDL2",
-				"-lSDL2_image",
-				"-lSDL2_ttf",
-				"-lSDL2_mixer",
-				"-llua54"
+				"${workspaceFolder}"
 			],
 			"problemMatcher": [
 				"$gcc"
