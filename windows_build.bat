@@ -26,7 +26,10 @@ g++^
  -lSDL2_image^
  -lSDL2_ttf^
  -lSDL2_mixer^
- -llua54
+ -llua54^
+ -g
+::Last Arg is DEBUG FLAG
+
 if errorlevel 0 goto :postbuild
 
 ECHO Build Failed
