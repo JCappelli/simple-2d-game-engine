@@ -6,6 +6,7 @@
              "type": "cppdbg",
              "request": "launch",
              "program": "${workspaceFolder}/build/game.exe",
+             "preLaunchTask": "Code Only Build",
              "args": [],
              "stopAtEntry": false,
              "cwd": "${workspaceFolder}/build",

@@ -10,9 +10,13 @@ class Game
         bool isRunning = false;
 
         void ProcessInput();
+        void Update(float deltaTime);
         void Render();
 
     public:
+        const int TARGET_FPS = 60;
+        const Uint64 TARGET_MILLISECS_PER_FRAME = 1000 / static_cast<Uint64>(TARGET_FPS);
+
         Game();
         ~Game();
 

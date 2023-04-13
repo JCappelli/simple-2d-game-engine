@@ -29,6 +29,7 @@
 			],
 			"group": {
 				"kind": "build",
+				
 				"isDefault": true
 			},
 			"detail": "compiler: gcc from user PATH"

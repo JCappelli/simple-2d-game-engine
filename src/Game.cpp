@@ -2,6 +2,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <iostream>
+#include <glm/glm.hpp>
 
 Game::Game()
 {
@@ -48,11 +49,23 @@ void Game::Initialize()
 
 void Game::Run()
 {
+    Uint64 tickCountAfterLastUpdate = 0;
     while (isRunning)
     {
+        while(!SDL_TICKS_PASSED(SDL_GetTicks64(), tickCountAfterLastUpdate + TARGET_MILLISECS_PER_FRAME));
+
         ProcessInput();
+        Update(static_cast<float>(SDL_GetTicks64() - tickCountAfterLastUpdate) / 1000.0);
         Render();
+
+        tickCountAfterLastUpdate = SDL_GetTicks64();
     }
+}
+
+glm::vec2 playerPosition = {100.0,100.0};
+void Game::Update(float deltaTime)
+{
+    playerPosition.y += 30 * deltaTime;
 }
 
 void Game::ProcessInput()
@@ -92,7 +105,11 @@ void Game::Render()
     SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
     SDL_FreeSurface(surface);
 
-    SDL_Rect dstRect = {50, 50, 32, 32};
+    SDL_Rect dstRect = {
+        static_cast<int>(playerPosition.x), 
+        static_cast<int>(playerPosition.y), 
+        32, 
+        32};
     SDL_RenderCopy(renderer, texture, NULL, &dstRect);
 
     SDL_DestroyTexture(texture);
