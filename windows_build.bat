@@ -2,12 +2,16 @@ ECHO OFF
 ::Cd into workspace folder
 cd %~f1
 
+::Check For Code Only Build
+if "%~2"=="-c" goto :compile
+
 ::Clean old files
 ECHO Clearing Old Build Files
-del /f /q^
- build\*
+rmdir /s /q build
+mkdir build
 
 ::Compile
+:compile
 ECHO Compiling Project
 g++^
  -std=c++17^
@@ -37,8 +41,16 @@ goto:end
 
 :postbuild
  ECHO Build Succeeded
+
+::Check For Code Only Build
+if "%~2"=="-c" goto :end
+
  ::Copy Binaries
  ECHO Copy Data
- copy lib\SDL\Windows\bin\SDL2.dll build\SDL2.dll
+ xcopy /q lib\SDL\Windows\bin\*.dll build\
+ xcopy /q lib\Lua\Windows\*.dll build\
+
+ mkdir build\assets
+ xcopy /q /e /h assets build\assets 
 
 :end

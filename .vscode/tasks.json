@@ -3,10 +3,26 @@
 	"tasks": [
 		{
 			"type": "shell",
-			"label": "Windows Build with gcc",
+			"label": "Full Build",
 			"command": "./windows_build.bat",
 			"args": [
 				"${workspaceFolder}"
+			],
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": {
+				"kind": "build"
+			},
+			"detail": "compiler: gcc from user PATH"
+		},
+		{
+			"type": "shell",
+			"label": "Code Only Build",
+			"command": "./windows_build.bat",
+			"args": [
+				"${workspaceFolder}",
+				"-c"
 			],
 			"problemMatcher": [
 				"$gcc"
