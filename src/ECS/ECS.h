@@ -71,10 +71,11 @@ class ComponentPool : public IPool
     private:
         std::vector<T> components;
     public:
-        Pool(int size = 100){
+        ComponentPool(int size = 100){
             Resize(size);
         }
-        ~Pool() = default;
+
+        virtual ~ComponentPool() = default;
 
         bool isEmpty() const { return components.empty(); }
         int GetSize() const  { return components.size(); }
@@ -82,7 +83,7 @@ class ComponentPool : public IPool
         void Clear() { components.clear(); }
         void Add(T newComponent) { components.push_back(newComponent); }
         void Set(int index, T componentValue) { components[index] = componentValue; }
-        T& Get(int index) { return static_cast<T&>components[index]; }
+        T& Get(int index) { return static_cast<T&>(components[index]); }
 };
 
 class Registry
