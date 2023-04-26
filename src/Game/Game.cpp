@@ -1,5 +1,6 @@
 #include "Game.h"
 #include "../Debugging/Logger.h"
+#include "../ECS/ECS.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <glm/glm.hpp>
@@ -45,6 +46,13 @@ void Game::Initialize()
     }
 
     isRunning = true;
+
+    Setup();
+}
+
+void Game::Setup()
+{
+    //Create Entity
 }
 
 void Game::Run()

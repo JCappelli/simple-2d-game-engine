@@ -21,6 +21,7 @@ class Game
         ~Game();
 
         void Initialize();
+        void Setup();
         void Run();
         void Destroy();
 };
