@@ -1,5 +1,8 @@
 #include "ECS.h"
+#include "../Debugging/Logger.h"
 #include <algorithm>
+
+int IComponent::nextId = 0;
 
 int Entity::GetId() const
 {
@@ -19,4 +22,39 @@ void System::RemoveEntityFromSystem(Entity entity)
 const ComponentSignature& System::GetComponentSignature() const
 {
     return requiredSignature;
+}
+
+Entity Registry::CreateEntity()
+{
+    int entityId = numberOfEntities++;
+
+    Entity entity = Entity(entityId);
+    entitiesToBeAdded.insert(entity);
+
+    Logger::Log("Created entity with id: " + std::to_string(entityId));
+
+    return entity;
+}
+
+void Registry::Update()
+{
+    //Add/remove entities from queue
+}
+
+void Registry::AddEntityToSystems(Entity entity)
+{
+    const auto entityId = entity.GetId();
+    const auto& entityComponentSignature = entityComponentSignatures[entityId];
+
+    for (auto& system: systems)
+    {
+        const auto& systemComponentSignature = system.second->GetComponentSignature();
+
+        bool isMatch = (entityComponentSignature & systemComponentSignature) == systemComponentSignature;
+
+        if (isMatch)
+        {
+            system.second->AddEntityToSystem(entity);
+        }
+    }
 }

@@ -10,7 +10,20 @@
         "unordered_map": "cpp",
         "vector": "cpp",
         "iterator": "cpp",
-        "string_view": "cpp"
+        "string_view": "cpp",
+        "atomic": "cpp",
+        "bitset": "cpp",
+        "cwchar": "cpp",
+        "functional": "cpp",
+        "initializer_list": "cpp",
+        "iosfwd": "cpp",
+        "new": "cpp",
+        "tuple": "cpp",
+        "type_traits": "cpp",
+        "utility": "cpp",
+        "typeindex": "cpp",
+        "memory": "cpp",
+        "istream": "cpp"
     },
     "cmake.configureOnOpen": false
 }

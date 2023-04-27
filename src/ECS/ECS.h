@@ -5,19 +5,20 @@
 #include<vector>
 #include<unordered_map>
 #include<typeindex>
+#include<set>
+#include<memory>
 
 const unsigned int MAX_COMPONENT_TYPES = 64;
 typedef std::bitset<MAX_COMPONENT_TYPES> ComponentSignature;
 
-struct BaseComponent
+struct IComponent
 {
     protected:
         static int nextId;
 };
 
-
 template <typename T>
-class Component : public BaseComponent
+class Component : public IComponent
 {
     static int GetId()
     {
@@ -37,6 +38,10 @@ class Entity
         bool operator== (const Entity& rhs) const
         {
             return GetId() == rhs.GetId();
+        }
+        bool operator< (const Entity& rhs) const
+        {
+            return GetId() < rhs.GetId();
         }
 };
 
@@ -90,12 +95,99 @@ class Registry
 {
     private:
         int numberOfEntities = 0;
+        std::set<Entity> entitiesToBeAdded;
+        std::set<Entity> entitiesToBeRemoved;
+
         std::vector<IPool*> componentPools;
         std::vector<ComponentSignature> entityComponentSignatures; //indexs are entity ID
-        std::unordered_map<std::type_index, System> systems;
+        std::unordered_map<std::type_index, System*> systems;
     
     public: 
-        //TODO: need to be able to create an entity, destroy, add component, remove component
+        //Entity
+        Entity CreateEntity();
+
+        //Components
+        template <typename T, typename  ...TArgs> 
+        void AddComponent(Entity entity, TArgs&& ...args)
+        {
+            const auto componentId = Component<T>::GetId();
+            const auto entityId = entity.GetId();
+
+            if (componentId >= componentPools.size())
+            {
+                componentPools.resize(componentId + 1, nullptr);
+            }
+
+            if (componentPools[componentId] == nullptr)
+            {
+                ComponentPool<T>* newComponentPool = new ComponentPool<T>();
+                componentPools[componentId] = newComponentPool;
+            }
+
+            ComponentPool<T>* componentPool = componentPools[componentId];
+
+            if (entityId >= componentPool->GetSize())
+            {
+                componentPool->Resize(numberOfEntities);
+            }
+
+            T newComponent = T(std::forward<TArgs>(args)...);
+
+            componentPool->Set(entityId, newComponent);
+
+            entityComponentSignatures[entityId].set(componentId);
+        }
+
+        template <typename T>
+        void RemoveComponent(Entity entity)
+        {
+            const auto componentId = Component<T>::GetId();
+            const auto entityId = entity.GetId();
+
+            entityComponentSignatures[entityId].set(componentId, false);
+        }
+
+        template <typename T>
+        void HasComponent(Entity entity)
+        {
+            const auto componentId = Component<T>::GetId();
+            const auto entityId = entity.GetId();
+
+            return entityComponentSignatures[entityId].test(componentId);
+        }
+
+        void Update();
+
+        //Systems
+        template <typename T, typename ...TArgs>
+        void AddSystem(TArgs&& ...args)
+        {
+            T* newSystem = new T(std::forward<TArgs>(args)...);
+
+            systems.insert(std::make_pair(std::type_index(typeid(T)),newSystem));
+        }
+
+        template <typename T>
+        void RemoveSystem()
+        {
+            auto systemIterator = systems.find(std::type_index(typeid(T)));
+            systems.erase(systemIterator);
+        }
+
+        template <typename T>
+        bool HasSystem() const
+        {
+            return systems.find(std::type_index(typeid(T))) != systems.end();
+        }
+
+        template <typename T>
+        T& GetSystem() const
+        {
+            auto systemIterator = systems.find(std::type_index(typeid(T)));
+            return *(std::static_pointer_cast<T>(systemIterator->second));
+        }
+
+        void AddEntityToSystems(Entity entity);
 };
 
 #endif
