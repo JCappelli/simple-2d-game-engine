@@ -1,6 +1,8 @@
 #include "Game.h"
 #include "../Debugging/Logger.h"
 #include "../ECS/ECS.h"
+#include "../Components/TransformComponent.h"
+#include "../Components/RigidbodyComponent.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <glm/glm.hpp>
@@ -55,6 +57,13 @@ void Game::Setup()
     registry = std::make_unique<Registry>();
 
     Entity player = registry->CreateEntity();
+
+    registry->AddComponent<TransformComponent>(player, 
+        glm::vec2(50,50), 
+        glm::vec2(1,1),
+        0.0);
+    registry->AddComponent<RigidbodyComponent>(player,
+        glm::vec2(20,20));
 }
 
 void Game::Run()

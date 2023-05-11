@@ -7,6 +7,7 @@
 #include<typeindex>
 #include<set>
 #include<memory>
+#include "../Debugging/Logger.h"
 
 const unsigned int MAX_COMPONENT_TYPES = 64;
 typedef std::bitset<MAX_COMPONENT_TYPES> ComponentSignature;
@@ -20,11 +21,12 @@ struct IComponent
 template <typename T>
 class Component : public IComponent
 {
-    static int GetId()
-    {
-        static int id = nextId++;
-        return id;
-    }
+    public:
+        static int GetId()
+        {
+            static int id = nextId++;
+            return id;
+        }
 };
 
 class Entity
@@ -113,7 +115,7 @@ class Registry
             const auto componentId = Component<T>::GetId();
             const auto entityId = entity.GetId();
 
-            if (componentId >= componentPools.size())
+            if (componentId >= static_cast<int>(componentPools.size()))
             {
                 componentPools.resize(componentId + 1, nullptr);
             }
@@ -137,6 +139,9 @@ class Registry
             componentPool->Set(entityId, newComponent);
 
             entityComponentSignatures[entityId].set(componentId);
+
+            Logger::Log("component id = " + std::to_string(componentId) + 
+                " was added to entity id " + std::to_string(entityId));
         }
 
         template <typename T>
