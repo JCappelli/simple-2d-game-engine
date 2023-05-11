@@ -98,9 +98,9 @@ class Registry
         std::set<Entity> entitiesToBeAdded;
         std::set<Entity> entitiesToBeRemoved;
 
-        std::vector<IPool*> componentPools;
+        std::vector<std::shared_ptr<IPool>> componentPools;
         std::vector<ComponentSignature> entityComponentSignatures; //indexs are entity ID
-        std::unordered_map<std::type_index, System*> systems;
+        std::unordered_map<std::type_index, std::shared_ptr<System>> systems;
     
     public: 
         //Entity
@@ -120,11 +120,12 @@ class Registry
 
             if (componentPools[componentId] == nullptr)
             {
-                ComponentPool<T>* newComponentPool = new ComponentPool<T>();
+                std::shared_ptr<ComponentPool<T>> newComponentPool = std::make_shared<ComponentPool<T>>();
                 componentPools[componentId] = newComponentPool;
             }
 
-            ComponentPool<T>* componentPool = componentPools[componentId];
+            std::shared_ptr<ComponentPool<T>> componentPool = 
+                std::static_pointer_cast<ComponentPool<T>>(componentPools[componentId]);
 
             if (entityId >= componentPool->GetSize())
             {
@@ -162,7 +163,7 @@ class Registry
         template <typename T, typename ...TArgs>
         void AddSystem(TArgs&& ...args)
         {
-            T* newSystem = new T(std::forward<TArgs>(args)...);
+            std::shared_ptr<T> newSystem = std::make_shared<T>(std::forward<TArgs>(args)...);
 
             systems.insert(std::make_pair(std::type_index(typeid(T)),newSystem));
         }

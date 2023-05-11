@@ -52,7 +52,9 @@ void Game::Initialize()
 
 void Game::Setup()
 {
-    //Create Entity
+    registry = std::make_unique<Registry>();
+
+    Entity player = registry->CreateEntity();
 }
 
 void Game::Run()

@@ -31,14 +31,14 @@ Entity Registry::CreateEntity()
     Entity entity = Entity(entityId);
     entitiesToBeAdded.insert(entity);
 
+    if (entityId >= static_cast<int>(entityComponentSignatures.size()))
+    {
+        entityComponentSignatures.resize(entityId + 1);
+    }
+
     Logger::Log("Created entity with id: " + std::to_string(entityId));
 
     return entity;
-}
-
-void Registry::Update()
-{
-    //Add/remove entities from queue
 }
 
 void Registry::AddEntityToSystems(Entity entity)
@@ -57,4 +57,15 @@ void Registry::AddEntityToSystems(Entity entity)
             system.second->AddEntityToSystem(entity);
         }
     }
+}
+
+void Registry::Update()
+{
+    for (auto entity: entitiesToBeAdded)
+    {
+        AddEntityToSystems(entity);
+    }
+    entitiesToBeAdded.clear();
+
+    //Remove Entities based on queue
 }

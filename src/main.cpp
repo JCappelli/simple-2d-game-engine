@@ -3,11 +3,11 @@
 
 int main(int argc, char *argv[])
 {
-    Game* game = new Game();
+    std::unique_ptr<Game> game = std::make_unique<Game>();
+
     game->Initialize();
     game->Run();
     game->Destroy();
 
-    delete(game);
     return 0;
 }

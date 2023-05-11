@@ -1,6 +1,7 @@
 #ifndef GAME_H
 #define GAME_H
 #include <SDL2/SDL.h>
+#include "../ECS/ECS.h"
 
 class Game
 {
@@ -8,6 +9,8 @@ class Game
         SDL_Window* window = NULL;
         SDL_Renderer* renderer = NULL;
         bool isRunning = false;
+
+        std::unique_ptr<Registry> registry;
 
         void ProcessInput();
         void Update(float deltaTime);
@@ -26,3 +29,4 @@ class Game
         void Destroy();
 };
 #endif
+ 
