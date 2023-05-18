@@ -58,11 +58,11 @@ void Game::Setup()
 
     Entity player = registry->CreateEntity();
 
-    registry->AddComponent<TransformComponent>(player, 
+    player.AddComponent<TransformComponent>( 
         glm::vec2(50,50), 
         glm::vec2(1,1),
         0.0);
-    registry->AddComponent<RigidbodyComponent>(player,
+    player.AddComponent<RigidbodyComponent>(
         glm::vec2(20,20));
 }
 

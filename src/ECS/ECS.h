@@ -33,8 +33,10 @@ class Entity
 {
     private:
         int id;
+        class Registry* registry;
+
     public:
-        Entity(int id): id(id) {};
+        Entity(int id, Registry* registry): id(id), registry(registry) {};
         int GetId() const;
 
         bool operator== (const Entity& rhs) const
@@ -45,6 +47,11 @@ class Entity
         {
             return GetId() < rhs.GetId();
         }
+
+        template<typename T, typename ...TArgs> void AddComponent(TArgs&& ...args);
+        template<typename T> void RemoveComponent();
+        template<typename T> bool HasComponent() const;
+        template<typename T> T& GetComponent() const;
 };
 
 class System
@@ -162,6 +169,16 @@ class Registry
             return entityComponentSignatures[entityId].test(componentId);
         }
 
+        template <typename T>
+        T& GetComponent(Entity entity)
+        {
+            const auto componentId = Component<T>::GetId();
+            const auto entityId = entity.GetId();
+
+            auto componentPool = std::static_pointer_cast<ComponentPool<T>>(componentPools[componentId]);
+            return componentPool->Get(entityId);
+        }
+
         void Update();
 
         //Systems
@@ -195,5 +212,29 @@ class Registry
 
         void AddEntityToSystems(Entity entity);
 };
+
+template<typename T, typename ...TArgs> 
+void Entity::AddComponent(TArgs&& ...args)
+{
+    registry->AddComponent<T>(*this, std::forward<TArgs>(args)...);
+}
+
+template<typename T>
+void Entity::RemoveComponent()
+{
+    registry->RemoveComponent<T>(*this);
+}
+
+template<typename T>
+bool Entity::HasComponent() const
+{
+    return registry->HasComponent<T>(*this);
+}
+
+template<typename T>
+T& Entity::GetComponent() const
+{
+    return registry->GetComponent<T>(*this);
+}
 
 #endif
