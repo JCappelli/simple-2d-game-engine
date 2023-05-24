@@ -24,6 +24,11 @@ const ComponentSignature& System::GetComponentSignature() const
     return requiredSignature;
 }
 
+std::vector<Entity> System::GetSystemEntities() const
+{
+    return entities;
+}
+
 Entity Registry::CreateEntity()
 {
     int entityId = numberOfEntities++;

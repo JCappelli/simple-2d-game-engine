@@ -64,6 +64,7 @@ class System
         void AddEntityToSystem(Entity entity);
         void RemoveEntityFromSystem(Entity entity);
         const ComponentSignature& GetComponentSignature() const;
+        std::vector<Entity> GetSystemEntities() const;
 
         //Defines Component type that entities need to have 
         //to be used by the system

@@ -1,4 +1,5 @@
 {
+    "workbench.editor.revealIfOpen": true,
     "files.associations": {
         "memory_resource": "cpp",
         "ostream": "cpp",

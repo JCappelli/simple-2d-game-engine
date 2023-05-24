@@ -3,6 +3,7 @@
 #include "../ECS/ECS.h"
 #include "../Components/TransformComponent.h"
 #include "../Components/RigidbodyComponent.h"
+#include "../Systems/MovementSystem.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <glm/glm.hpp>
@@ -54,7 +55,11 @@ void Game::Initialize()
 
 void Game::Setup()
 {
+    //Create Registry
     registry = std::make_unique<Registry>();
+
+    //Setup Systems
+    registry->AddSystem<MovementSystem>();
 
     Entity player = registry->CreateEntity();
 
@@ -85,6 +90,12 @@ glm::vec2 playerPosition = {100.0,100.0};
 void Game::Update(float deltaTime)
 {
     playerPosition.y += 30 * deltaTime;
+
+    //Update Systems
+    registry->GetSystem<MovementSystem>().Update(deltaTime);
+
+    //Update entities (add/remove)
+    registry->Update();
 }
 
 void Game::ProcessInput()
