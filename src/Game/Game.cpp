@@ -3,6 +3,8 @@
 #include "../ECS/ECS.h"
 #include "../Components/TransformComponent.h"
 #include "../Components/RigidbodyComponent.h"
+#include "../Components/SpriteComponent.h"
+#include "../Systems/RenderSystem.h"
 #include "../Systems/MovementSystem.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
@@ -41,7 +43,7 @@ void Game::Initialize()
         return;
     }
 
-    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
     if (!renderer)
     {
         Logger::Error("Error Creating SDL renderer");
@@ -60,6 +62,7 @@ void Game::Setup()
 
     //Setup Systems
     registry->AddSystem<MovementSystem>();
+    registry->AddSystem<RenderSystem>();
 
     Entity player = registry->CreateEntity();
 
@@ -69,6 +72,9 @@ void Game::Setup()
         0.0);
     player.AddComponent<RigidbodyComponent>(
         glm::vec2(20,20));
+    player.AddComponent<SpriteComponent>(
+        20,
+        20);
 }
 
 void Game::Run()
@@ -124,11 +130,8 @@ void Game::Render()
 {
     SDL_SetRenderDrawColor(renderer, 255, 0, 255, 255);
     SDL_RenderClear(renderer);
-
-    //Test Draw Rect
-    SDL_Rect rectangle = {10, 10, 50, 100};
-    SDL_SetRenderDrawColor(renderer, 255,255,255,255);
-    SDL_RenderFillRect(renderer, &rectangle);
+    
+    registry->GetSystem<RenderSystem>().Update(renderer);
 
     //Test Draw Ship
     SDL_Surface* surface = IMG_Load("./assets/sprites/ships/ship_0000.png");

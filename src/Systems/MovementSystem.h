@@ -35,10 +35,6 @@ void MovementSystem::Update(float deltaTime)
         const RigidbodyComponent rigidbody = entity.GetComponent<RigidbodyComponent>();
 
         transform.position += rigidbody.velocity * deltaTime;
-
-        Logger::Log("Entity: " + std::to_string(entity.GetId()) + " at position: " + 
-            std::to_string(transform.position.x) + ", " + 
-            std::to_string(transform.position.y));
     }
 }
 
