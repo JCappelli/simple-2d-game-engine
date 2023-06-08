@@ -2,6 +2,7 @@
 #define GAME_H
 #include <SDL2/SDL.h>
 #include "../ECS/ECS.h"
+#include "../AssetStore/AssetStore.h"
 
 class Game
 {
@@ -11,6 +12,7 @@ class Game
         bool isRunning = false;
 
         std::unique_ptr<Registry> registry;
+        std::unique_ptr<AssetStore> assetStore;
 
         void ProcessInput();
         void Update(float deltaTime);

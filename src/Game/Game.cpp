@@ -57,6 +57,13 @@ void Game::Initialize()
 
 void Game::Setup()
 {
+    //Create Asset Store
+    assetStore = std::make_unique<AssetStore>();
+
+    //Add Needed Textures
+    assetStore->AddTexture("playerShip",
+        "./assets/sprites/ships/ship_0000.png");
+
     //Create Registry
     registry = std::make_unique<Registry>();
 
@@ -74,7 +81,8 @@ void Game::Setup()
         glm::vec2(20,20));
     player.AddComponent<SpriteComponent>(
         20,
-        20);
+        20,
+        "playerShip");
 }
 
 void Game::Run()
