@@ -61,7 +61,7 @@ void Game::Setup()
     assetStore = std::make_unique<AssetStore>();
 
     //Add Needed Textures
-    assetStore->AddTexture("playerShip",
+    assetStore->AddTexture(renderer, "playerShip",
         "./assets/sprites/ships/ship_0000.png");
 
     //Create Registry
@@ -80,8 +80,10 @@ void Game::Setup()
     player.AddComponent<RigidbodyComponent>(
         glm::vec2(20,20));
     player.AddComponent<SpriteComponent>(
-        20,
-        20,
+        32,
+        32,
+        0,
+        0,
         "playerShip");
 }
 
@@ -100,11 +102,8 @@ void Game::Run()
     }
 }
 
-glm::vec2 playerPosition = {100.0,100.0};
 void Game::Update(float deltaTime)
 {
-    playerPosition.y += 30 * deltaTime;
-
     //Update Systems
     registry->GetSystem<MovementSystem>().Update(deltaTime);
 
@@ -136,26 +135,7 @@ void Game::ProcessInput()
 
 void Game::Render()
 {
-    SDL_SetRenderDrawColor(renderer, 255, 0, 255, 255);
-    SDL_RenderClear(renderer);
-    
-    registry->GetSystem<RenderSystem>().Update(renderer);
-
-    //Test Draw Ship
-    SDL_Surface* surface = IMG_Load("./assets/sprites/ships/ship_0000.png");
-    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
-    SDL_FreeSurface(surface);
-
-    SDL_Rect dstRect = {
-        static_cast<int>(playerPosition.x), 
-        static_cast<int>(playerPosition.y), 
-        32, 
-        32};
-    SDL_RenderCopy(renderer, texture, NULL, &dstRect);
-
-    SDL_DestroyTexture(texture);
-    
-    SDL_RenderPresent(renderer);
+    registry->GetSystem<RenderSystem>().Update(renderer, assetStore);
 }
 
 void Game::Destroy()
