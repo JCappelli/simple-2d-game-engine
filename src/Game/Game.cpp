@@ -9,6 +9,9 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <glm/glm.hpp>
+#include <fstream>
+#include <string>
+#include <ctype.h>
 
 Game::Game()
 {
@@ -59,11 +62,6 @@ void Game::Setup()
 {
     //Create Asset Store
     assetStore = std::make_unique<AssetStore>();
-
-    //Add Needed Textures
-    assetStore->AddTexture(renderer, "tilemap",
-        "./assets/sprites/mini-dungeon-tiles.png");
-
     //Create Registry
     registry = std::make_unique<Registry>();
 
@@ -71,6 +69,52 @@ void Game::Setup()
     registry->AddSystem<MovementSystem>();
     registry->AddSystem<RenderSystem>();
 
+    LoadLevel();
+}
+
+void Game::LoadLevel()
+{
+    //Add Needed Textures
+    assetStore->AddTexture(renderer, "tilemap",
+        "./assets/sprites/mini-dungeon-tiles.png");
+
+    //Load the tilemap
+    int tileSize = 16;
+    int tileMapWidth = 12;
+    int mapSizeX = 30;
+    int mapSizeY = 30;
+
+    std::fstream mapFile;
+    mapFile.open("./assets/tilemaps/level.csv");
+
+    std::string workingNumberString = "";
+    for (int y = 0; y < mapSizeY; y++)
+    {
+        for (int x = 0; x < mapSizeX; x++)
+        {
+            char c;
+            mapFile.get(c);
+            while (isdigit(c))
+            {
+                workingNumberString += c;
+                c = '\0';
+                mapFile.get(c);
+            } 
+            
+            int tileIndex = std::atoi(workingNumberString.c_str());
+            workingNumberString.clear();
+
+            int srcRectY = (tileIndex / tileMapWidth) * tileSize;
+            int srcRectX = (tileIndex - ((tileIndex / tileMapWidth) * tileMapWidth)) * tileSize;
+
+            Entity tile = registry->CreateEntity();
+            tile.AddComponent<TransformComponent>(glm::vec2(x * tileSize,y * tileSize), glm::vec2(1,1), 0.0);
+            tile.AddComponent<SpriteComponent>(tileSize, tileSize, srcRectX, srcRectY, "tilemap");
+        }
+    }
+    mapFile.close();
+
+    //Create Player
     Entity player = registry->CreateEntity();
 
     player.AddComponent<TransformComponent>( 

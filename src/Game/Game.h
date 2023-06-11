@@ -27,6 +27,7 @@ class Game
 
         void Initialize();
         void Setup();
+        void LoadLevel();
         void Run();
         void Destroy();
 };
