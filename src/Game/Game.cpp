@@ -61,8 +61,8 @@ void Game::Setup()
     assetStore = std::make_unique<AssetStore>();
 
     //Add Needed Textures
-    assetStore->AddTexture(renderer, "playerShip",
-        "./assets/sprites/ships/ship_0000.png");
+    assetStore->AddTexture(renderer, "tilemap",
+        "./assets/sprites/mini-dungeon-tiles.png");
 
     //Create Registry
     registry = std::make_unique<Registry>();
@@ -80,11 +80,11 @@ void Game::Setup()
     player.AddComponent<RigidbodyComponent>(
         glm::vec2(20,20));
     player.AddComponent<SpriteComponent>(
-        32,
-        32,
-        0,
-        0,
-        "playerShip");
+        16,
+        16,
+        1*16,
+        8*16,
+        "tilemap");
 }
 
 void Game::Run()
