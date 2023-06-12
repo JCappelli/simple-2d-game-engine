@@ -9,6 +9,7 @@ struct  SpriteComponent
 public:
     int width;
     int height;
+    int zIndex;
     SDL_Rect srcRect;
     std::string spriteAssetId;
 
@@ -16,12 +17,14 @@ public:
         int width = 0, 
         int height = 0,
         int srcRectX = 0,
-        int srcRectY = 0, 
+        int srcRectY = 0,
+        int zIndex = 0, 
         const std::string& assetId = "")
     {
         this->width = width;
         this->height = height;
         this->spriteAssetId = assetId;
+        this->zIndex = zIndex;
         this->srcRect = {
             srcRectX,
             srcRectY,

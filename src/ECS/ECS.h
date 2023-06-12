@@ -147,9 +147,6 @@ class Registry
             componentPool->Set(entityId, newComponent);
 
             entityComponentSignatures[entityId].set(componentId);
-
-            Logger::Log("component id = " + std::to_string(componentId) + 
-                " was added to entity id " + std::to_string(entityId));
         }
 
         template <typename T>

@@ -5,6 +5,7 @@
 #include "../Components/TransformComponent.h"
 #include "../Components/SpriteComponent.h"
 #include <SDL2/SDL.h>
+#include <algorithm>
 #include "../AssetStore/AssetStore.h"
 
 class RenderSystem : public System
@@ -32,7 +33,17 @@ void RenderSystem::Update(SDL_Renderer* renderer, std::unique_ptr<AssetStore>& a
     SDL_SetRenderDrawColor(renderer, 234, 165, 108, 255);
     SDL_RenderClear(renderer);
 
-    for (auto entity: GetSystemEntities())
+    //Sort by z index
+    std::vector<Entity> entities = GetSystemEntities();
+    std::sort(entities.begin(), entities.end(), [](const Entity& a, const Entity& b)->bool
+    {
+        const auto spriteA = a.GetComponent<SpriteComponent>();
+        const auto spriteB = b.GetComponent<SpriteComponent>();
+        return (spriteA.zIndex < spriteB.zIndex);
+    });
+
+    //render all renderable entities
+    for (auto entity: entities)
     {
         const auto transform = entity.GetComponent<TransformComponent>();
         const auto sprite = entity.GetComponent<SpriteComponent>();

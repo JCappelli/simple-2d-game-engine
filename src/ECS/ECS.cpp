@@ -41,8 +41,6 @@ Entity Registry::CreateEntity()
         entityComponentSignatures.resize(entityId + 1);
     }
 
-    Logger::Log("Created entity with id: " + std::to_string(entityId));
-
     return entity;
 }
 
