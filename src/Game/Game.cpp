@@ -5,9 +5,11 @@
 #include "../Components/RigidbodyComponent.h"
 #include "../Components/SpriteComponent.h"
 #include "../Components/AnimationComponent.h"
+#include "../Components/BoxColliderComponent.h"
 #include "../Systems/RenderSystem.h"
 #include "../Systems/MovementSystem.h"
 #include "../Systems/AnimationSystem.h"
+#include "../Systems/CollisionSystem.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <glm/glm.hpp>
@@ -71,6 +73,7 @@ void Game::Setup()
     registry->AddSystem<MovementSystem>();
     registry->AddSystem<RenderSystem>();
     registry->AddSystem<AnimationSystem>();
+    registry->AddSystem<CollisionSystem>();
 
     LoadLevel();
 }
@@ -137,6 +140,23 @@ void Game::LoadLevel()
         3,
         3,
         true);
+    player.AddComponent<BoxColliderComponent>(
+        16,
+        16,
+        0,
+        0);
+
+
+    Entity testCollisionEntity = registry->CreateEntity();
+    testCollisionEntity.AddComponent<TransformComponent>(
+        glm::vec2(16 * 4, 16 * 4),
+        glm::vec2(1,1),
+        0.0);
+    testCollisionEntity.AddComponent<BoxColliderComponent>(
+        64,
+        64,
+        0,
+        0);
 }
 
 void Game::Run()
@@ -159,6 +179,7 @@ void Game::Update(float deltaTime)
     //Update Systems
     registry->GetSystem<MovementSystem>().Update(deltaTime);
     registry->GetSystem<AnimationSystem>().Update();
+    registry->GetSystem<CollisionSystem>().Update();
 
     //Update entities (add/remove)
     registry->Update();
