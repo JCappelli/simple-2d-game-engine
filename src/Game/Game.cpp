@@ -4,8 +4,10 @@
 #include "../Components/TransformComponent.h"
 #include "../Components/RigidbodyComponent.h"
 #include "../Components/SpriteComponent.h"
+#include "../Components/AnimationComponent.h"
 #include "../Systems/RenderSystem.h"
 #include "../Systems/MovementSystem.h"
+#include "../Systems/AnimationSystem.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <glm/glm.hpp>
@@ -68,6 +70,7 @@ void Game::Setup()
     //Setup Systems
     registry->AddSystem<MovementSystem>();
     registry->AddSystem<RenderSystem>();
+    registry->AddSystem<AnimationSystem>();
 
     LoadLevel();
 }
@@ -130,6 +133,10 @@ void Game::LoadLevel()
         8*16,
         2,
         "tilemap");
+    player.AddComponent<AnimationComponent>(
+        3,
+        3,
+        true);
 }
 
 void Game::Run()
@@ -151,6 +158,7 @@ void Game::Update(float deltaTime)
 {
     //Update Systems
     registry->GetSystem<MovementSystem>().Update(deltaTime);
+    registry->GetSystem<AnimationSystem>().Update();
 
     //Update entities (add/remove)
     registry->Update();
