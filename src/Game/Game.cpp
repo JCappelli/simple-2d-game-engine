@@ -10,6 +10,7 @@
 #include "../Systems/MovementSystem.h"
 #include "../Systems/AnimationSystem.h"
 #include "../Systems/CollisionSystem.h"
+#include "../Debugging/DebugDrawCollidersSystem.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <glm/glm.hpp>
@@ -74,6 +75,9 @@ void Game::Setup()
     registry->AddSystem<RenderSystem>();
     registry->AddSystem<AnimationSystem>();
     registry->AddSystem<CollisionSystem>();
+    
+    //Debug Systems
+    registry->AddSystem<DebugDrawCollidersSystem>();
 
     LoadLevel();
 }
@@ -149,12 +153,12 @@ void Game::LoadLevel()
 
     Entity testCollisionEntity = registry->CreateEntity();
     testCollisionEntity.AddComponent<TransformComponent>(
-        glm::vec2(16 * 4, 16 * 4),
+        glm::vec2(16 * 4, 16 * 3),
         glm::vec2(1,1),
         0.0);
     testCollisionEntity.AddComponent<BoxColliderComponent>(
         64,
-        64,
+        80,
         0,
         0);
 }
@@ -209,7 +213,13 @@ void Game::ProcessInput()
 
 void Game::Render()
 {
+    SDL_SetRenderDrawColor(renderer, 234, 165, 108, 255);
+    SDL_RenderClear(renderer);
+
     registry->GetSystem<RenderSystem>().Update(renderer, assetStore);
+    registry->GetSystem<DebugDrawCollidersSystem>().Update(renderer);
+
+    SDL_RenderPresent(renderer);
 }
 
 void Game::Destroy()

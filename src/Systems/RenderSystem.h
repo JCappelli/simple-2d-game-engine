@@ -11,7 +11,7 @@
 class RenderSystem : public System
 {
 public:
-    const int SPRITE_RENDER_SCALE = 2;
+    static const int SPRITE_RENDER_SCALE = 2;
     RenderSystem();
     ~RenderSystem();
 
@@ -30,9 +30,6 @@ RenderSystem::~RenderSystem()
 
 void RenderSystem::Update(SDL_Renderer* renderer, std::unique_ptr<AssetStore>& assetStore)
 {
-    SDL_SetRenderDrawColor(renderer, 234, 165, 108, 255);
-    SDL_RenderClear(renderer);
-
     //Sort by z index
     std::vector<Entity> entities = GetSystemEntities();
     std::sort(entities.begin(), entities.end(), [](const Entity& a, const Entity& b)->bool
@@ -65,8 +62,6 @@ void RenderSystem::Update(SDL_Renderer* renderer, std::unique_ptr<AssetStore>& a
             NULL,
             SDL_RendererFlip::SDL_FLIP_NONE);
     }
-
-    SDL_RenderPresent(renderer);
 }
 
 #endif
