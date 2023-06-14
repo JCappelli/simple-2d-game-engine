@@ -9,11 +9,15 @@
 
 class DebugDrawCollidersSystem : public System
 {
+private:
+    bool isEnabled = false;
+
 public:
     DebugDrawCollidersSystem();
     ~DebugDrawCollidersSystem() = default;
 
     void Update(SDL_Renderer* renderer);
+    void ToggleEnabled();
 };
 
 DebugDrawCollidersSystem::DebugDrawCollidersSystem()
@@ -24,6 +28,9 @@ DebugDrawCollidersSystem::DebugDrawCollidersSystem()
 
 void DebugDrawCollidersSystem::Update(SDL_Renderer* renderer)
 {
+    if (!isEnabled)
+        return;
+
     SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
 
     for (auto entity: GetSystemEntities())
@@ -40,6 +47,11 @@ void DebugDrawCollidersSystem::Update(SDL_Renderer* renderer)
 
         SDL_RenderDrawRect(renderer, &rect);
     }
+}
+
+void DebugDrawCollidersSystem::ToggleEnabled()
+{
+    isEnabled = !isEnabled;
 }
 
 #endif

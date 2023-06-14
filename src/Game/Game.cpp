@@ -204,6 +204,10 @@ void Game::ProcessInput()
                 {
                     isRunning = false;
                 }
+                else if (sdlEvent.key.keysym.sym == SDLK_BACKQUOTE)
+                {
+                    registry->GetSystem<DebugDrawCollidersSystem>().ToggleEnabled();
+                }
                 break;
             default:
                 break;
