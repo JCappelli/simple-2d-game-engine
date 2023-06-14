@@ -7,6 +7,7 @@
 #include<typeindex>
 #include<set>
 #include<memory>
+#include<deque>
 #include "../Debugging/Logger.h"
 
 const unsigned int MAX_COMPONENT_TYPES = 64;
@@ -38,6 +39,7 @@ class Entity
     public:
         Entity(int id, Registry* registry): id(id), registry(registry) {};
         int GetId() const;
+        void Kill();
 
         bool operator== (const Entity& rhs) const
         {
@@ -107,14 +109,19 @@ class Registry
         int numberOfEntities = 0;
         std::set<Entity> entitiesToBeAdded;
         std::set<Entity> entitiesToBeRemoved;
+        std::deque<int> freeIds;
 
         std::vector<std::shared_ptr<IPool>> componentPools;
         std::vector<ComponentSignature> entityComponentSignatures; //indexs are entity ID
         std::unordered_map<std::type_index, std::shared_ptr<System>> systems;
     
+        void AddEntityToSystems(Entity entity);
+        void RemoveEntityFromSystems(Entity entity);
+
     public: 
         //Entity
         Entity CreateEntity();
+        void KillEntity(Entity entity);
 
         //Components
         template <typename T, typename  ...TArgs> 
@@ -207,8 +214,6 @@ class Registry
             auto systemIterator = systems.find(std::type_index(typeid(T)));
             return *(std::static_pointer_cast<T>(systemIterator->second));
         }
-
-        void AddEntityToSystems(Entity entity);
 };
 
 template<typename T, typename ...TArgs> 

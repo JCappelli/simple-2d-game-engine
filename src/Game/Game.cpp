@@ -161,6 +161,11 @@ void Game::LoadLevel()
         80,
         0,
         0);
+
+    Entity testKillTarget = registry->CreateEntity();
+    testKillTarget.AddComponent<TransformComponent>();
+
+    testKillTarget.Kill();
 }
 
 void Game::Run()
