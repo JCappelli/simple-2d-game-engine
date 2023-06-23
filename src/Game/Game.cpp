@@ -10,6 +10,7 @@
 #include "../Systems/MovementSystem.h"
 #include "../Systems/AnimationSystem.h"
 #include "../Systems/CollisionSystem.h"
+#include "../Systems/DamageSystem.h"
 #include "../Debugging/DebugDrawCollidersSystem.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
@@ -69,12 +70,15 @@ void Game::Setup()
     assetStore = std::make_unique<AssetStore>();
     //Create Registry
     registry = std::make_unique<Registry>();
+    //Create Event Bus
+    eventBus = std::make_unique<EventBus>();
 
     //Setup Systems
     registry->AddSystem<MovementSystem>();
     registry->AddSystem<RenderSystem>();
     registry->AddSystem<AnimationSystem>();
     registry->AddSystem<CollisionSystem>();
+    registry->AddSystem<DamageSystem>();
     
     //Debug Systems
     registry->AddSystem<DebugDrawCollidersSystem>();
@@ -185,10 +189,14 @@ void Game::Run()
 
 void Game::Update(float deltaTime)
 {
+    eventBus->Reset();
+
+    registry->GetSystem<DamageSystem>().SubscibeToEvents(eventBus);
+
     //Update Systems
     registry->GetSystem<MovementSystem>().Update(deltaTime);
     registry->GetSystem<AnimationSystem>().Update();
-    registry->GetSystem<CollisionSystem>().Update();
+    registry->GetSystem<CollisionSystem>().Update(eventBus);
 
     //Update entities (add/remove)
     registry->Update();

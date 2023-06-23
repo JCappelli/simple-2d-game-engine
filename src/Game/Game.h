@@ -3,6 +3,7 @@
 #include <SDL2/SDL.h>
 #include "../ECS/ECS.h"
 #include "../AssetStore/AssetStore.h"
+#include "../Events/EventBus.h"
 
 class Game
 {
@@ -13,6 +14,7 @@ class Game
 
         std::unique_ptr<Registry> registry;
         std::unique_ptr<AssetStore> assetStore;
+        std::unique_ptr<EventBus> eventBus;
 
         void ProcessInput();
         void Update(float deltaTime);

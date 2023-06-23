@@ -5,6 +5,8 @@
 #include "../Components/BoxColliderComponent.h"
 #include "../Components/TransformComponent.h"
 #include "../Debugging/Logger.h"
+#include "../Events/EventBus.h"
+#include "../Events/CollisionEvent.h"
 
 class CollisionSystem : public System
 {
@@ -15,7 +17,7 @@ public:
     CollisionSystem();
     ~CollisionSystem() = default;
 
-    void Update();
+    void Update(std::unique_ptr<EventBus>& eventBus);
 };
 
 CollisionSystem::CollisionSystem()
@@ -24,7 +26,7 @@ CollisionSystem::CollisionSystem()
     RequireComponent<TransformComponent>();
 }
 
-void CollisionSystem::Update()
+void CollisionSystem::Update(std::unique_ptr<EventBus>& eventBus)
 {
     std::vector<Entity> entities = GetSystemEntities();
     for (auto i = entities.begin(); i != entities.end(); i++)
@@ -58,7 +60,8 @@ void CollisionSystem::Update()
 
             if (colliding)
             {
-                Logger::Log("Collision Happened");
+                eventBus->EmitEvent<CollisionEvent>(a, b);
+                //Logger::Log("Collision Happened");
             }
         }
     }
