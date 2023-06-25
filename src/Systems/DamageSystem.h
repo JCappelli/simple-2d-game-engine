@@ -28,6 +28,6 @@ void DamageSystem::SubscibeToEvents(std::unique_ptr<EventBus>& eventBus)
 
 void DamageSystem::OnCollisionHappened(CollisionEvent& event)
 {
-    Logger::Log("Collision With " + std::to_string(event.a.GetId()));
+    //Logger::Log("Collision With " + std::to_string(event.a.GetId()));
 }
 #endif

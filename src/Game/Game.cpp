@@ -12,6 +12,7 @@
 #include "../Systems/CollisionSystem.h"
 #include "../Systems/DamageSystem.h"
 #include "../Systems/InputSystem.h"
+#include "../Systems/PlayerMovementSystem.h"
 #include "../Debugging/DebugDrawCollidersSystem.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
@@ -81,6 +82,7 @@ void Game::Setup()
     registry->AddSystem<CollisionSystem>();
     registry->AddSystem<DamageSystem>();
     registry->AddSystem<InputSystem>();
+    registry->AddSystem<PlayerMovementSystem>();
     
     //Debug Systems
     registry->AddSystem<DebugDrawCollidersSystem>();
@@ -139,23 +141,24 @@ void Game::LoadLevel()
         0.0);
     player.AddComponent<RigidbodyComponent>(
         glm::vec2(20,20));
+    player.AddComponent<PlayerMovementComponent>(
+        40);
     player.AddComponent<SpriteComponent>(
         16,
         16,
-        1*16,
-        8*16,
+        0*16,
+        7*16,
         2,
         "tilemap");
     player.AddComponent<AnimationComponent>(
-        3,
-        3,
+        2,
+        5,
         true);
     player.AddComponent<BoxColliderComponent>(
         16,
         16,
         0,
         0);
-
 
     Entity testCollisionEntity = registry->CreateEntity();
     testCollisionEntity.AddComponent<TransformComponent>(
@@ -195,11 +198,13 @@ void Game::Update(float deltaTime)
 
     registry->GetSystem<DebugDrawCollidersSystem>().SubscribeToEvents(eventBus);
     registry->GetSystem<DamageSystem>().SubscibeToEvents(eventBus);
+    registry->GetSystem<PlayerMovementSystem>().SubscribeToEvents(eventBus);
 
     //Update Systems
     registry->GetSystem<MovementSystem>().Update(deltaTime);
     registry->GetSystem<AnimationSystem>().Update();
     registry->GetSystem<CollisionSystem>().Update(eventBus);
+    registry->GetSystem<PlayerMovementSystem>().Update();
 
     //Update entities (add/remove)
     registry->Update();
@@ -216,6 +221,9 @@ void Game::ProcessInput()
                 isRunning = false;
                 break;
             case SDL_KEYDOWN:
+                registry->GetSystem<InputSystem>().PollKeyEvent(sdlEvent, eventBus);
+                break;
+             case SDL_KEYUP:
                 registry->GetSystem<InputSystem>().PollKeyEvent(sdlEvent, eventBus);
                 break;
             default:
