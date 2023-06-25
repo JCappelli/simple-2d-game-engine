@@ -7,9 +7,8 @@
 #include "../Components/AnimationComponent.h"
 #include "../Components/BoxColliderComponent.h"
 #include "../Systems/RenderSystem.h"
-#include "../Systems/MovementSystem.h"
 #include "../Systems/AnimationSystem.h"
-#include "../Systems/CollisionSystem.h"
+#include "../Systems/PhysicsSystem.h"
 #include "../Systems/DamageSystem.h"
 #include "../Systems/InputSystem.h"
 #include "../Systems/PlayerMovementSystem.h"
@@ -76,10 +75,9 @@ void Game::Setup()
     eventBus = std::make_unique<EventBus>();
 
     //Setup Systems
-    registry->AddSystem<MovementSystem>();
+    registry->AddSystem<PhysicsSystem>();
     registry->AddSystem<RenderSystem>();
     registry->AddSystem<AnimationSystem>();
-    registry->AddSystem<CollisionSystem>();
     registry->AddSystem<DamageSystem>();
     registry->AddSystem<InputSystem>();
     registry->AddSystem<PlayerMovementSystem>();
@@ -136,7 +134,7 @@ void Game::LoadLevel()
     Entity player = registry->CreateEntity();
 
     player.AddComponent<TransformComponent>( 
-        glm::vec2(50,50), 
+        glm::vec2(2 * 16, 2 * 16), 
         glm::vec2(1,1),
         0.0);
     player.AddComponent<RigidbodyComponent>(
@@ -201,9 +199,8 @@ void Game::Update(float deltaTime)
     registry->GetSystem<PlayerMovementSystem>().SubscribeToEvents(eventBus);
 
     //Update Systems
-    registry->GetSystem<MovementSystem>().Update(deltaTime);
+    registry->GetSystem<PhysicsSystem>().Update(deltaTime, eventBus);
     registry->GetSystem<AnimationSystem>().Update();
-    registry->GetSystem<CollisionSystem>().Update(eventBus);
     registry->GetSystem<PlayerMovementSystem>().Update();
 
     //Update entities (add/remove)

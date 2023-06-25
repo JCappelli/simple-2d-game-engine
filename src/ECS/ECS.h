@@ -166,7 +166,7 @@ class Registry
         }
 
         template <typename T>
-        void HasComponent(Entity entity)
+        bool HasComponent(Entity entity)
         {
             const auto componentId = Component<T>::GetId();
             const auto entityId = entity.GetId();
