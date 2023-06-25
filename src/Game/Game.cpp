@@ -11,6 +11,7 @@
 #include "../Systems/AnimationSystem.h"
 #include "../Systems/CollisionSystem.h"
 #include "../Systems/DamageSystem.h"
+#include "../Systems/InputSystem.h"
 #include "../Debugging/DebugDrawCollidersSystem.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
@@ -79,6 +80,7 @@ void Game::Setup()
     registry->AddSystem<AnimationSystem>();
     registry->AddSystem<CollisionSystem>();
     registry->AddSystem<DamageSystem>();
+    registry->AddSystem<InputSystem>();
     
     //Debug Systems
     registry->AddSystem<DebugDrawCollidersSystem>();
@@ -191,6 +193,7 @@ void Game::Update(float deltaTime)
 {
     eventBus->Reset();
 
+    registry->GetSystem<DebugDrawCollidersSystem>().SubscribeToEvents(eventBus);
     registry->GetSystem<DamageSystem>().SubscibeToEvents(eventBus);
 
     //Update Systems
@@ -213,14 +216,7 @@ void Game::ProcessInput()
                 isRunning = false;
                 break;
             case SDL_KEYDOWN:
-                if (sdlEvent.key.keysym.sym == SDLK_ESCAPE)
-                {
-                    isRunning = false;
-                }
-                else if (sdlEvent.key.keysym.sym == SDLK_BACKQUOTE)
-                {
-                    registry->GetSystem<DebugDrawCollidersSystem>().ToggleEnabled();
-                }
+                registry->GetSystem<InputSystem>().PollKeyEvent(sdlEvent, eventBus);
                 break;
             default:
                 break;

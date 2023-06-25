@@ -61,7 +61,6 @@ void CollisionSystem::Update(std::unique_ptr<EventBus>& eventBus)
             if (colliding)
             {
                 eventBus->EmitEvent<CollisionEvent>(a, b);
-                //Logger::Log("Collision Happened");
             }
         }
     }

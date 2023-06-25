@@ -2,6 +2,8 @@
 #define DEBUGDRAWCOLLIDERSSYSTEM_H
 
 #include "../ECS/ECS.h"
+#include "../Events/EventBus.h"
+#include "../Events/InputEvent.h"
 #include "../Components/BoxColliderComponent.h"
 #include "../Components/TransformComponent.h"
 #include "../Systems/RenderSystem.h"
@@ -11,19 +13,34 @@ class DebugDrawCollidersSystem : public System
 {
 private:
     bool isEnabled = false;
+    void OnButtonPressed(InputButtonEvent& event);
 
 public:
     DebugDrawCollidersSystem();
     ~DebugDrawCollidersSystem() = default;
 
+    void SubscribeToEvents(std::unique_ptr<EventBus>& eventBus);
     void Update(SDL_Renderer* renderer);
-    void ToggleEnabled();
+
 };
 
 DebugDrawCollidersSystem::DebugDrawCollidersSystem()
 {
     RequireComponent<BoxColliderComponent>();
     RequireComponent<TransformComponent>();
+}
+
+void DebugDrawCollidersSystem::SubscribeToEvents(std::unique_ptr<EventBus>& eventBus)
+{
+    eventBus->SubscribeToEvent<InputButtonEvent>(this, &DebugDrawCollidersSystem::OnButtonPressed);
+}
+
+void DebugDrawCollidersSystem::OnButtonPressed(InputButtonEvent& event)
+{
+    if (event.actionType == INPUT_BUTTON_DEBUG_DRAW_PRESS)
+    {
+        isEnabled = !isEnabled;
+    }
 }
 
 void DebugDrawCollidersSystem::Update(SDL_Renderer* renderer)
@@ -48,10 +65,4 @@ void DebugDrawCollidersSystem::Update(SDL_Renderer* renderer)
         SDL_RenderDrawRect(renderer, &rect);
     }
 }
-
-void DebugDrawCollidersSystem::ToggleEnabled()
-{
-    isEnabled = !isEnabled;
-}
-
 #endif
