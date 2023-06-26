@@ -15,7 +15,7 @@ public:
     RenderSystem();
     ~RenderSystem();
 
-    void Update(SDL_Renderer* renderer, std::unique_ptr<AssetStore>& assetStore);
+    void Update(SDL_Renderer* renderer, std::unique_ptr<AssetStore>& assetStore, const SDL_Rect& cameraRect);
 };
 
 RenderSystem::RenderSystem()
@@ -28,7 +28,7 @@ RenderSystem::~RenderSystem()
 { 
 }
 
-void RenderSystem::Update(SDL_Renderer* renderer, std::unique_ptr<AssetStore>& assetStore)
+void RenderSystem::Update(SDL_Renderer* renderer, std::unique_ptr<AssetStore>& assetStore, const SDL_Rect& cameraRect)
 {
     //Sort by z index
     std::vector<Entity> entities = GetSystemEntities();
@@ -48,8 +48,8 @@ void RenderSystem::Update(SDL_Renderer* renderer, std::unique_ptr<AssetStore>& a
         SDL_Rect srcRect = sprite.srcRect;
 
         SDL_Rect dstRect = {
-            static_cast<int>(transform.position.x) * SPRITE_RENDER_SCALE,
-            static_cast<int>(transform.position.y)* SPRITE_RENDER_SCALE,
+            static_cast<int>(transform.position.x - cameraRect.x) * SPRITE_RENDER_SCALE,
+            static_cast<int>(transform.position.y - cameraRect.y)* SPRITE_RENDER_SCALE,
             sprite.width * SPRITE_RENDER_SCALE * static_cast<int>(transform.scale.x),
             sprite.height * SPRITE_RENDER_SCALE *  static_cast<int>(transform.scale.y)
         };

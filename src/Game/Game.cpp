@@ -6,12 +6,14 @@
 #include "../Components/SpriteComponent.h"
 #include "../Components/AnimationComponent.h"
 #include "../Components/BoxColliderComponent.h"
+#include "../Components/CameraFollowComponent.h"
 #include "../Systems/RenderSystem.h"
 #include "../Systems/AnimationSystem.h"
 #include "../Systems/PhysicsSystem.h"
 #include "../Systems/DamageSystem.h"
 #include "../Systems/InputSystem.h"
 #include "../Systems/PlayerMovementSystem.h"
+#include "../Systems/CameraMovementSystem.h"
 #include "../Debugging/DebugDrawCollidersSystem.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
@@ -81,9 +83,21 @@ void Game::Setup()
     registry->AddSystem<DamageSystem>();
     registry->AddSystem<InputSystem>();
     registry->AddSystem<PlayerMovementSystem>();
+    registry->AddSystem<CameraMovementSystem>();
     
     //Debug Systems
     registry->AddSystem<DebugDrawCollidersSystem>();
+
+    //Init Camera Rect
+    int windowWidth = 0;
+    int windowHeight = 0;
+    SDL_GetWindowSize(window, &windowWidth, &windowHeight);
+    cameraRect = {
+        0,
+        0,
+        windowWidth,
+        windowHeight
+    };
 
     LoadLevel();
 }
@@ -157,6 +171,7 @@ void Game::LoadLevel()
         16,
         0,
         0);
+    player.AddComponent<CameraFollowComponent>();
 
     Entity testCollisionEntity = registry->CreateEntity();
     testCollisionEntity.AddComponent<TransformComponent>(
@@ -199,6 +214,7 @@ void Game::Update(float deltaTime)
     registry->GetSystem<PlayerMovementSystem>().SubscribeToEvents(eventBus);
 
     //Update Systems
+    registry->GetSystem<CameraMovementSystem>().Update(cameraRect);
     registry->GetSystem<PhysicsSystem>().Update(deltaTime, eventBus);
     registry->GetSystem<AnimationSystem>().Update();
     registry->GetSystem<PlayerMovementSystem>().Update();
@@ -231,10 +247,10 @@ void Game::ProcessInput()
 
 void Game::Render()
 {
-    SDL_SetRenderDrawColor(renderer, 234, 165, 108, 255);
+    SDL_SetRenderDrawColor(renderer, 118, 59, 54, 255);
     SDL_RenderClear(renderer);
 
-    registry->GetSystem<RenderSystem>().Update(renderer, assetStore);
+    registry->GetSystem<RenderSystem>().Update(renderer, assetStore, cameraRect);
     registry->GetSystem<DebugDrawCollidersSystem>().Update(renderer);
 
     SDL_RenderPresent(renderer);

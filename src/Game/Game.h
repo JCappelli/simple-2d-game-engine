@@ -10,6 +10,7 @@ class Game
     private:
         SDL_Window* window = NULL;
         SDL_Renderer* renderer = NULL;
+        SDL_Rect cameraRect = {};
         bool isRunning = false;
 
         std::unique_ptr<Registry> registry;
