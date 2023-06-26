@@ -251,7 +251,7 @@ void Game::Render()
     SDL_RenderClear(renderer);
 
     registry->GetSystem<RenderSystem>().Update(renderer, assetStore, cameraRect);
-    registry->GetSystem<DebugDrawCollidersSystem>().Update(renderer);
+    registry->GetSystem<DebugDrawCollidersSystem>().Update(renderer, cameraRect);
 
     SDL_RenderPresent(renderer);
 }

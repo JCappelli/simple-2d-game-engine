@@ -20,7 +20,7 @@ public:
     ~DebugDrawCollidersSystem() = default;
 
     void SubscribeToEvents(std::unique_ptr<EventBus>& eventBus);
-    void Update(SDL_Renderer* renderer);
+    void Update(SDL_Renderer* renderer, const SDL_Rect& cameraRect);
 
 };
 
@@ -43,7 +43,7 @@ void DebugDrawCollidersSystem::OnButtonPressed(InputButtonEvent& event)
     }
 }
 
-void DebugDrawCollidersSystem::Update(SDL_Renderer* renderer)
+void DebugDrawCollidersSystem::Update(SDL_Renderer* renderer, const SDL_Rect& cameraRect)
 {
     if (!isEnabled)
         return;
@@ -56,8 +56,8 @@ void DebugDrawCollidersSystem::Update(SDL_Renderer* renderer)
         const auto box = entity.GetComponent<BoxColliderComponent>();
 
         SDL_Rect rect = {
-            (static_cast<int>(transform.position.x) + box.offsetX) * RenderSystem::SPRITE_RENDER_SCALE,
-            (static_cast<int>(transform.position.y) + box.offsetY) * RenderSystem::SPRITE_RENDER_SCALE,
+            (static_cast<int>(transform.position.x) - cameraRect.x + box.offsetX) * RenderSystem::SPRITE_RENDER_SCALE,
+            (static_cast<int>(transform.position.y) - cameraRect.y + box.offsetY) * RenderSystem::SPRITE_RENDER_SCALE,
             box.width * RenderSystem::SPRITE_RENDER_SCALE,
             box.height * RenderSystem::SPRITE_RENDER_SCALE,
         };
