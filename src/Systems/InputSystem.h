@@ -18,7 +18,35 @@ private:
 public:
     InputSystem() = default;
     void PollKeyEvent(const SDL_Event& sdlEvent, std::unique_ptr<EventBus>& eventBus);
+    void PollMouseEvent(const SDL_Event& sdlEvent, std::unique_ptr<EventBus>& eventBus);
 };
+
+void InputSystem::PollMouseEvent(const SDL_Event& sdlEvent, std::unique_ptr<EventBus>& eventBus)
+{
+    switch (sdlEvent.type)
+    {
+    case SDL_MOUSEMOTION:
+        int x = 0;
+        int y = 0;
+        SDL_GetMouseState(&x, &y);
+        eventBus->EmitEvent<InputCursorEvent>(x, y);
+        break;
+    case SDL_MOUSEBUTTONDOWN:
+        if (sdlEvent.button.button == SDL_BUTTON_LEFT)
+        {
+            eventBus->EmitEvent<InputButtonEvent>(INPUT_BUTTON_SHOOT_PRESS);
+        }
+        break;
+    case SDL_MOUSEBUTTONUP:
+        if (sdlEvent.button.button == SDL_BUTTON_LEFT)
+        {
+            eventBus->EmitEvent<InputButtonEvent>(INPUT_BUTTON_SHOOT_RELEASE);
+        }
+        break;
+    default:
+        break;
+    }
+}
 
 void InputSystem::PollKeyEvent(const SDL_Event& sdlEvent, std::unique_ptr<EventBus>& eventBus)
 {
