@@ -13,11 +13,20 @@ class PhysicsSystem: public System
 {
 private:
     bool CheckAABBCollision(int aX, int aY, int aW, int aH, int bX, int bY, int bW, int bH) const;
+    void IterateMoveDirection(
+        int& moveValue, 
+        const Entity& movingEntity, 
+        TransformComponent& movingTransform, 
+        const BoxColliderComponent& movingBoxCollider, 
+        const std::vector<Entity>& entityList,
+        const glm::vec2& moveAxis);
     bool CheckCollisionAgainstAllOtherEntitiesInList(    
         const std::vector<Entity>& entities, 
         const Entity& a,
         const BoxColliderComponent& boxA, 
-        const TransformComponent& transformA) const;
+        const TransformComponent& transformA,
+        Entity& entityOut);
+
 public:
     PhysicsSystem();
 
@@ -42,6 +51,7 @@ void PhysicsSystem::Update(float deltaTime, std::unique_ptr<EventBus>& eventBus)
         if (a.HasComponent<RigidbodyComponent>())
         {
             auto& rigidbodyA = a.GetComponent<RigidbodyComponent>();
+
             int moveX = static_cast<int>(transformA.position.x + (rigidbodyA.velocity.x * deltaTime)) -
                 static_cast<int>(transformA.position.x);
             if (moveX == 0)
@@ -56,47 +66,45 @@ void PhysicsSystem::Update(float deltaTime, std::unique_ptr<EventBus>& eventBus)
                 transformA.position.y += (rigidbodyA.velocity.y * deltaTime);
             }
 
-            bool collision = false;
             while (moveX != 0 || moveY != 0)
             {
-                if (moveX != 0)
-                {
-                    int delta = glm::sign<int>(moveX);
-                    TransformComponent tempTrans = transformA;
-                    tempTrans.position.x += static_cast<float>(delta);
-                    if  (CheckCollisionAgainstAllOtherEntitiesInList(entities, a, boxA, tempTrans))
-                    {
-                        moveX = 0;
-                        collision = true;
-                    }
-                    else
-                    {
-                        transformA = tempTrans;
-                        moveX -= delta;
-                    }
-                }
+                IterateMoveDirection(moveX, a, transformA, boxA, entities, glm::vec2(1,0));
+                IterateMoveDirection(moveY, a, transformA, boxA, entities, glm::vec2(0,1));
+            }
+        }
+    }
+}
 
-                if (moveY != 0)
-                {
-                    int delta = glm::sign<int>(moveY);
-                    TransformComponent tempTrans = transformA;
-                    tempTrans.position.y += static_cast<float>(delta);
-                    if  (CheckCollisionAgainstAllOtherEntitiesInList(entities, a, boxA, tempTrans))
-                    {
-                        moveY = 0;
-                        collision = true;
-                    }
-                    else
-                    {
-                        transformA = tempTrans;
-                        moveY -= delta;
-                    }
-                }
-            }
-            if (collision)
-            {
-                eventBus->EmitEvent<CollisionEvent>(a);
-            }
+void PhysicsSystem::IterateMoveDirection(
+    int& moveValue, 
+    const Entity& movingEntity, 
+    TransformComponent& movingTransform, 
+    const BoxColliderComponent& movingBoxCollider, 
+    const std::vector<Entity>& entityList, 
+    const glm::vec2& moveAxis)
+{
+    if (moveValue != 0)
+    {
+        bool collision = false;
+
+        Entity otherEntity = movingEntity;
+        int delta = glm::sign<int>(moveValue);
+        TransformComponent tempTrans = movingTransform;
+        tempTrans.position += moveAxis * static_cast<float>(delta);
+        if  (CheckCollisionAgainstAllOtherEntitiesInList(entityList, movingEntity, movingBoxCollider, tempTrans, otherEntity))
+        {
+            collision = true;
+        }
+
+        BoxColliderComponent otherBox = otherEntity.GetComponent<BoxColliderComponent>();
+        if (collision == false || movingBoxCollider.isTrigger || otherBox.isTrigger)
+        {
+            movingTransform = tempTrans;
+            moveValue -= delta;
+        }
+        else
+        {
+            moveValue = 0;
         }
     }
 }
@@ -105,7 +113,8 @@ bool PhysicsSystem::CheckCollisionAgainstAllOtherEntitiesInList(
     const std::vector<Entity>& entities, 
     const Entity& a,
     const BoxColliderComponent& boxA, 
-    const TransformComponent& transformA) const
+    const TransformComponent& transformA, 
+    Entity& entityOut)
 {
     for (auto other = entities.begin(); other != entities.end(); other++)
     {
@@ -128,9 +137,11 @@ bool PhysicsSystem::CheckCollisionAgainstAllOtherEntitiesInList(
             boxB.height); 
         
         if (colliding)
+        {
+            entityOut = b;
             return true;
+        }
     }
-
     return false;
 }
 

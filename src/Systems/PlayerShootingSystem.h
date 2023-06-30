@@ -14,7 +14,7 @@ class PlayerShootingSystem: public System
 {
 private:    
     bool shouldShoot = false;
-    glm::vec2 aimTarget;
+    glm::vec2 aimTargetScreenPos;
 
     void OnButtonPush(InputButtonEvent& buttonEvent);
     void OnCursorMoved(InputCursorEvent& cursorEvent);
@@ -22,13 +22,13 @@ private:
 public:
     PlayerShootingSystem();
     void SubscribeToEvents(std::unique_ptr<EventBus>& eventBus);
-    void Update(std::unique_ptr<Registry>& registry);
+    void Update(std::unique_ptr<Registry>& registry, const SDL_Rect& cameraRect);
 };
 
 PlayerShootingSystem::PlayerShootingSystem()
 {
     shouldShoot = false;
-    aimTarget = glm::vec2(0,0);
+    aimTargetScreenPos = glm::vec2(0,0);
 
     RequireComponent<PlayerMovementComponent>();
     RequireComponent<TransformComponent>();
@@ -42,15 +42,19 @@ void PlayerShootingSystem::SubscribeToEvents(std::unique_ptr<EventBus>& eventBus
 
 void PlayerShootingSystem::OnButtonPush(InputButtonEvent& buttonEvent)
 {
-    shouldShoot = true;
+    if (buttonEvent.actionType == INPUT_BUTTON_SHOOT_PRESS)
+    {
+        shouldShoot = true;
+    }
 }
 
 void PlayerShootingSystem::OnCursorMoved(InputCursorEvent& cursorEvent)
 {
-    aimTarget = glm::vec2(cursorEvent.xPosition, cursorEvent.yPosition);
+    aimTargetScreenPos = glm::vec2(static_cast<float>(cursorEvent.xPosition), 
+        static_cast<float>(cursorEvent.yPosition));
 }
 
-void PlayerShootingSystem::Update(std::unique_ptr<Registry>& registry, SDL_Rect cameraRect)
+void PlayerShootingSystem::Update(std::unique_ptr<Registry>& registry, const SDL_Rect& cameraRect)
 {
     if (shouldShoot)
     {
@@ -59,8 +63,10 @@ void PlayerShootingSystem::Update(std::unique_ptr<Registry>& registry, SDL_Rect 
         {
             Entity player = entities[0];
             const auto transform = player.GetComponent<TransformComponent>();
-            
-            glm::vec2 bulletVelocity = glm::normalize(aimTarget - transform.position);
+
+            glm::vec2 aimTargetWorldPos = glm::vec2(cameraRect.x, cameraRect.y) + aimTargetScreenPos;
+
+            glm::vec2 bulletVelocity = glm::normalize(aimTargetWorldPos - transform.position);
             bulletVelocity *= 10;
             Entity bullet = registry->CreateEntity();
             bullet.AddComponent<TransformComponent>(
@@ -76,6 +82,12 @@ void PlayerShootingSystem::Update(std::unique_ptr<Registry>& registry, SDL_Rect 
                 "tilemap");
             bullet.AddComponent<RigidbodyComponent>(
                 bulletVelocity);
+            bullet.AddComponent<BoxColliderComponent>(
+                10,
+                10,
+                6,
+                6,
+                true);
         }
 
         shouldShoot = false;

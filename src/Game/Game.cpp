@@ -13,6 +13,7 @@
 #include "../Systems/DamageSystem.h"
 #include "../Systems/InputSystem.h"
 #include "../Systems/PlayerMovementSystem.h"
+#include "../Systems/PlayerShootingSystem.h"
 #include "../Systems/CameraMovementSystem.h"
 #include "../Debugging/DebugDrawCollidersSystem.h"
 #include <SDL2/SDL.h>
@@ -84,6 +85,7 @@ void Game::Setup()
     registry->AddSystem<InputSystem>();
     registry->AddSystem<PlayerMovementSystem>();
     registry->AddSystem<CameraMovementSystem>();
+    registry->AddSystem<PlayerShootingSystem>();
     
     //Debug Systems
     registry->AddSystem<DebugDrawCollidersSystem>();
@@ -212,12 +214,14 @@ void Game::Update(float deltaTime)
     registry->GetSystem<DebugDrawCollidersSystem>().SubscribeToEvents(eventBus);
     registry->GetSystem<DamageSystem>().SubscibeToEvents(eventBus);
     registry->GetSystem<PlayerMovementSystem>().SubscribeToEvents(eventBus);
+    registry->GetSystem<PlayerShootingSystem>().SubscribeToEvents(eventBus);
 
     //Update Systems
     registry->GetSystem<CameraMovementSystem>().Update(cameraRect);
     registry->GetSystem<PhysicsSystem>().Update(deltaTime, eventBus);
     registry->GetSystem<AnimationSystem>().Update();
     registry->GetSystem<PlayerMovementSystem>().Update();
+    registry->GetSystem<PlayerShootingSystem>().Update(registry, cameraRect);
 
     //Update entities (add/remove)
     registry->Update();
@@ -236,8 +240,17 @@ void Game::ProcessInput()
             case SDL_KEYDOWN:
                 registry->GetSystem<InputSystem>().PollKeyEvent(sdlEvent, eventBus);
                 break;
-             case SDL_KEYUP:
+            case SDL_KEYUP:
                 registry->GetSystem<InputSystem>().PollKeyEvent(sdlEvent, eventBus);
+                break;
+            case SDL_MOUSEMOTION:
+                registry->GetSystem<InputSystem>().PollMouseEvent(sdlEvent, eventBus);
+                break;
+            case SDL_MOUSEBUTTONDOWN:
+                registry->GetSystem<InputSystem>().PollMouseEvent(sdlEvent, eventBus);
+                break;
+            case SDL_MOUSEBUTTONUP:
+                registry->GetSystem<InputSystem>().PollMouseEvent(sdlEvent, eventBus);
                 break;
             default:
                 break;

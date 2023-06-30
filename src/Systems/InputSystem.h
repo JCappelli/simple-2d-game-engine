@@ -23,11 +23,11 @@ public:
 
 void InputSystem::PollMouseEvent(const SDL_Event& sdlEvent, std::unique_ptr<EventBus>& eventBus)
 {
+    int x = 0;
+    int y = 0;
     switch (sdlEvent.type)
     {
     case SDL_MOUSEMOTION:
-        int x = 0;
-        int y = 0;
         SDL_GetMouseState(&x, &y);
         eventBus->EmitEvent<InputCursorEvent>(x, y);
         break;
