@@ -7,6 +7,7 @@
 #include "../Components/AnimationComponent.h"
 #include "../Components/BoxColliderComponent.h"
 #include "../Components/CameraFollowComponent.h"
+#include "../Components/PlayerShootingComponent.h"
 #include "../Systems/RenderSystem.h"
 #include "../Systems/AnimationSystem.h"
 #include "../Systems/PhysicsSystem.h"
@@ -15,6 +16,7 @@
 #include "../Systems/PlayerMovementSystem.h"
 #include "../Systems/PlayerShootingSystem.h"
 #include "../Systems/CameraMovementSystem.h"
+#include "../Systems/ProjectileSystem.h"
 #include "../Debugging/DebugDrawCollidersSystem.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
@@ -86,6 +88,7 @@ void Game::Setup()
     registry->AddSystem<PlayerMovementSystem>();
     registry->AddSystem<CameraMovementSystem>();
     registry->AddSystem<PlayerShootingSystem>();
+    registry->AddSystem<ProjectileSystem>();
     
     //Debug Systems
     registry->AddSystem<DebugDrawCollidersSystem>();
@@ -156,7 +159,13 @@ void Game::LoadLevel()
     player.AddComponent<RigidbodyComponent>(
         glm::vec2(20,20));
     player.AddComponent<PlayerMovementComponent>(
-        40);
+        75);
+    player.AddComponent<PlayerShootingComponent>(
+        5*16,
+        8*16,
+        "tilemap",
+        160,
+        200);
     player.AddComponent<SpriteComponent>(
         16,
         16,
@@ -185,11 +194,6 @@ void Game::LoadLevel()
         80,
         0,
         0);
-
-    Entity testKillTarget = registry->CreateEntity();
-    testKillTarget.AddComponent<TransformComponent>();
-
-    testKillTarget.Kill();
 }
 
 void Game::Run()
@@ -222,6 +226,7 @@ void Game::Update(float deltaTime)
     registry->GetSystem<PlayerMovementSystem>().Update();
     registry->GetSystem<CameraMovementSystem>().Update(cameraRect);
     registry->GetSystem<PlayerShootingSystem>().Update(registry, cameraRect);
+    registry->GetSystem<ProjectileSystem>().Update(deltaTime);
 
     //Update entities (add/remove)
     registry->Update();

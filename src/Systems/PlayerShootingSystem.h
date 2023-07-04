@@ -4,8 +4,9 @@
 #include "../ECS/ECS.h"
 #include "../Components/TransformComponent.h"
 #include "../Components/SpriteComponent.h"
-#include "../Components/PlayerMovementComponent.h"
+#include "../Components/PlayerShootingComponent.h"
 #include "../Components/RigidbodyComponent.h"
+#include "../Components/ProjectileComponent.h"
 #include "../Events/EventBus.h"
 #include "../Events/InputEvent.h"
 #include <glm/glm.hpp>
@@ -30,7 +31,7 @@ PlayerShootingSystem::PlayerShootingSystem()
     shouldShoot = false;
     aimTargetScreenPos = glm::vec2(0,0);
 
-    RequireComponent<PlayerMovementComponent>();
+    RequireComponent<PlayerShootingComponent>();
     RequireComponent<TransformComponent>();
 }
 
@@ -58,17 +59,16 @@ void PlayerShootingSystem::Update(std::unique_ptr<Registry>& registry, const SDL
 {
     if (shouldShoot)
     {
-        std::vector<Entity> entities = GetSystemEntities();
-        if (entities.size() > 0)
+        for (auto entity: GetSystemEntities())
         {
-            Entity player = entities[0];
-            const auto transform = player.GetComponent<TransformComponent>();
+            const auto transform = entity.GetComponent<TransformComponent>();
+            const auto playerShooting = entity.GetComponent<PlayerShootingComponent>();
 
             glm::vec2 aimTargetWorldPos = aimTargetScreenPos /
                 static_cast<float>(RenderSystem::SPRITE_RENDER_SCALE) + glm::vec2(cameraRect.x, cameraRect.y);
 
             glm::vec2 bulletVelocity = glm::normalize(aimTargetWorldPos - transform.position);
-            bulletVelocity *= 100;
+            bulletVelocity *= playerShooting.projectileSpeed;
             Entity bullet = registry->CreateEntity();
             bullet.AddComponent<TransformComponent>(
                 transform.position, 
@@ -77,12 +77,14 @@ void PlayerShootingSystem::Update(std::unique_ptr<Registry>& registry, const SDL
             bullet.AddComponent<SpriteComponent>(
                 16,
                 16,
-                5*16,
-                8*16,
+                playerShooting.spriteSrcRectX,
+                playerShooting.spriteSrcRectY,
                 3,
-                "tilemap");
+                playerShooting.spriteAssetId);
             bullet.AddComponent<RigidbodyComponent>(
                 bulletVelocity);
+            bullet.AddComponent<ProjectileComponent>(
+                playerShooting.maxRange);
             bullet.AddComponent<BoxColliderComponent>(
                 10,
                 10,

@@ -26,8 +26,8 @@ void  CameraMovementSystem::Update(SDL_Rect& cameraRect)
     {
         const auto transform = entity.GetComponent<TransformComponent>();
 
-        cameraRect.x = transform.position.x - (cameraRect.w * 0.5) / RenderSystem::SPRITE_RENDER_SCALE;
-        cameraRect.y = transform.position.y - (cameraRect.h * 0.5) / RenderSystem::SPRITE_RENDER_SCALE;
+        cameraRect.x = std::floor(transform.position.x - (cameraRect.w * 0.5) / RenderSystem::SPRITE_RENDER_SCALE);
+        cameraRect.y = std::floor(transform.position.y - (cameraRect.h * 0.5) / RenderSystem::SPRITE_RENDER_SCALE);
     }
 }
 

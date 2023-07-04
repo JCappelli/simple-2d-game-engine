@@ -7,8 +7,9 @@
 class CollisionEvent: public Event
 {
 public:
-    Entity collisionSubject;
-    CollisionEvent(Entity collisionSubject): collisionSubject(collisionSubject) {}
+    Entity movingBody;
+    Entity collidedBody;
+    CollisionEvent(Entity movingBody, Entity collidedBody): movingBody(movingBody), collidedBody(collidedBody) {}
 };
 
 #endif
