@@ -64,10 +64,11 @@ void PlayerShootingSystem::Update(std::unique_ptr<Registry>& registry, const SDL
             Entity player = entities[0];
             const auto transform = player.GetComponent<TransformComponent>();
 
-            glm::vec2 aimTargetWorldPos = glm::vec2(cameraRect.x, cameraRect.y) + aimTargetScreenPos;
+            glm::vec2 aimTargetWorldPos = aimTargetScreenPos /
+                static_cast<float>(RenderSystem::SPRITE_RENDER_SCALE) + glm::vec2(cameraRect.x, cameraRect.y);
 
             glm::vec2 bulletVelocity = glm::normalize(aimTargetWorldPos - transform.position);
-            bulletVelocity *= 10;
+            bulletVelocity *= 100;
             Entity bullet = registry->CreateEntity();
             bullet.AddComponent<TransformComponent>(
                 transform.position, 
