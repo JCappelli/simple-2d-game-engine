@@ -217,10 +217,10 @@ void Game::Update(float deltaTime)
     registry->GetSystem<PlayerShootingSystem>().SubscribeToEvents(eventBus);
 
     //Update Systems
-    registry->GetSystem<CameraMovementSystem>().Update(cameraRect);
     registry->GetSystem<PhysicsSystem>().Update(deltaTime, eventBus);
     registry->GetSystem<AnimationSystem>().Update();
     registry->GetSystem<PlayerMovementSystem>().Update();
+    registry->GetSystem<CameraMovementSystem>().Update(cameraRect);
     registry->GetSystem<PlayerShootingSystem>().Update(registry, cameraRect);
 
     //Update entities (add/remove)

@@ -52,19 +52,12 @@ void PhysicsSystem::Update(float deltaTime, std::unique_ptr<EventBus>& eventBus)
         {
             auto& rigidbodyA = a.GetComponent<RigidbodyComponent>();
 
-            int moveX = static_cast<int>(transformA.position.x + (rigidbodyA.velocity.x * deltaTime)) -
-                static_cast<int>(transformA.position.x);
-            if (moveX == 0)
-            {
-                transformA.position.x += (rigidbodyA.velocity.x * deltaTime);
-            }
+            rigidbodyA.simulatedOffset += rigidbodyA.velocity * deltaTime;
 
-            int moveY = static_cast<int>(transformA.position.y + (rigidbodyA.velocity.y * deltaTime)) -
-                static_cast<int>(transformA.position.y);
-            if (moveY == 0)
-            {
-                transformA.position.y += (rigidbodyA.velocity.y * deltaTime);
-            }
+            int moveX = std::round(rigidbodyA.simulatedOffset.x);
+            int moveY = std::round(rigidbodyA.simulatedOffset.y);
+            
+            rigidbodyA.simulatedOffset -= glm::vec2(static_cast<float>(moveX), static_cast<float>(moveY));
 
             while (moveX != 0 || moveY != 0)
             {

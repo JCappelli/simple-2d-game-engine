@@ -6,10 +6,12 @@
 struct RigidbodyComponent
 {
     glm::vec2 velocity;
+    glm::vec2 simulatedOffset;
 
     RigidbodyComponent(glm::vec2 velocity = glm::vec2(0.0, 0.0))
     {
         this->velocity = velocity;
+        this->simulatedOffset = glm::vec2(0,0);
     }
 };
 
