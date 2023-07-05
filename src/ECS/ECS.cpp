@@ -21,7 +21,7 @@ void System::AddEntityToSystem(Entity entity)
 
 void System::RemoveEntityFromSystem(Entity entity)
 {
-    std::remove(entities.begin(), entities.end(), entity);
+    entities.erase(std::remove(entities.begin(), entities.end(), entity), entities.end());
 }
 
 const ComponentSignature& System::GetComponentSignature() const

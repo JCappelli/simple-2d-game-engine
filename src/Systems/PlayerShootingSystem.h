@@ -88,8 +88,8 @@ void PlayerShootingSystem::Update(std::unique_ptr<Registry>& registry, const SDL
             bullet.AddComponent<BoxColliderComponent>(
                 10,
                 10,
-                6,
-                6,
+                3,
+                3,
                 true);
         }
 
