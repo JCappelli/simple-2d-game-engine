@@ -9,6 +9,7 @@
 #include<memory>
 #include<deque>
 #include "../Debugging/Logger.h"
+#include "EntityTypes.h"
 
 const unsigned int MAX_COMPONENT_TYPES = 64;
 typedef std::bitset<MAX_COMPONENT_TYPES> ComponentSignature;
@@ -115,6 +116,8 @@ class Registry
         std::vector<ComponentSignature> entityComponentSignatures; //indexs are entity ID
         std::unordered_map<std::type_index, std::shared_ptr<System>> systems;
     
+        std::unordered_map<int, EntityFlags> entityFlagsMap;
+
         void AddEntityToSystems(Entity entity);
         void RemoveEntityFromSystems(Entity entity);
 
@@ -122,6 +125,11 @@ class Registry
         //Entity
         Entity CreateEntity();
         void KillEntity(Entity entity);
+
+        void AddEntityFlags(Entity entity, EntityFlags flags);
+        void RemoveFlags(Entity entity, EntityFlags flags);
+        void ClearFlags(Entity entity, EntityFlags flags);
+        bool HasFlags(Entity entity, EntityFlags flags);
 
         //Components
         template <typename T, typename  ...TArgs> 

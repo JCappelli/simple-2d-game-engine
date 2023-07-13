@@ -62,6 +62,53 @@ void Registry::KillEntity(Entity entity)
     entitiesToBeRemoved.emplace(entity);
 }
 
+void Registry::AddEntityFlags(Entity entity, EntityFlags flags)
+{
+    auto i = entityFlagsMap.find(entity.GetId());
+    if (i == entityFlagsMap.end())
+    {
+        entityFlagsMap[entity.GetId()] = flags;
+    }
+    else
+    {
+        i->second = i->second | flags;
+    }
+}
+
+void Registry::RemoveFlags(Entity entity, EntityFlags flags)
+{
+    auto i = entityFlagsMap.find(entity.GetId());
+    if (i != entityFlagsMap.end())
+    {
+        i->second = i->second & ~flags;
+    }
+}
+
+void Registry::ClearFlags(Entity entity, EntityFlags flags)
+{
+    auto i = entityFlagsMap.find(entity.GetId());
+    if (i != entityFlagsMap.end())
+    {
+        i->second = EntityFlags::None;
+    }
+}
+
+bool Registry::HasFlags(Entity entity, EntityFlags flags)
+{
+    if (flags == EntityFlags::None)
+    {
+        return true;
+    }
+
+    auto i = entityFlagsMap.find(entity.GetId());
+    if (i != entityFlagsMap.end())
+    {
+        return (i->second == (i->second & flags));
+    }
+
+    return false;
+}
+
 void Registry::AddEntityToSystems(Entity entity)
 {
     const auto entityId = entity.GetId();
