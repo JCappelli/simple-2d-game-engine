@@ -14,6 +14,26 @@ void Entity::Kill()
     registry->KillEntity(*this);
 }
 
+void Entity::AddFlags(EntityFlags flags)
+{
+    registry->AddEntityFlags(*this, flags);
+}
+
+void Entity::RemoveFlags(EntityFlags flags)
+{
+    registry->RemoveFlags(*this, flags);
+}
+
+void Entity::ClearFlags()
+{
+    registry->ClearFlags(*this);
+}
+
+bool Entity::HasFlags(EntityFlags flags)
+{
+    return registry->HasFlags(*this, flags);
+}
+
 void System::AddEntityToSystem(Entity entity)
 {
     entities.push_back(entity);
@@ -84,7 +104,7 @@ void Registry::RemoveFlags(Entity entity, EntityFlags flags)
     }
 }
 
-void Registry::ClearFlags(Entity entity, EntityFlags flags)
+void Registry::ClearFlags(Entity entity)
 {
     auto i = entityFlagsMap.find(entity.GetId());
     if (i != entityFlagsMap.end())
@@ -147,6 +167,7 @@ void Registry::Update()
     //Handle Removals
     for(auto entity: entitiesToBeRemoved)
     {
+        ClearFlags(entity);
         RemoveEntityFromSystems(entity);
         entityComponentSignatures[entity.GetId()].reset();
         

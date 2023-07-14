@@ -12,7 +12,6 @@
 #include "../Systems/RenderSystem.h"
 #include "../Systems/AnimationSystem.h"
 #include "../Systems/PhysicsSystem.h"
-#include "../Systems/DamageSystem.h"
 #include "../Systems/InputSystem.h"
 #include "../Systems/PlayerMovementSystem.h"
 #include "../Systems/PlayerShootingSystem.h"
@@ -84,7 +83,6 @@ void Game::Setup()
     registry->AddSystem<PhysicsSystem>();
     registry->AddSystem<RenderSystem>();
     registry->AddSystem<AnimationSystem>();
-    registry->AddSystem<DamageSystem>();
     registry->AddSystem<InputSystem>();
     registry->AddSystem<PlayerMovementSystem>();
     registry->AddSystem<CameraMovementSystem>();
@@ -152,7 +150,7 @@ void Game::LoadLevel()
 
     //Create Player
     Entity player = registry->CreateEntity();
-
+    player.AddFlags(EntityFlags::Player);
     player.AddComponent<TransformComponent>( 
         glm::vec2(2 * 16, 2 * 16), 
         glm::vec2(1,1),
@@ -166,7 +164,8 @@ void Game::LoadLevel()
         8*16,
         "tilemap",
         160,
-        200);
+        200, 
+        5);
     player.AddComponent<SpriteComponent>(
         16,
         16,
@@ -186,6 +185,7 @@ void Game::LoadLevel()
     player.AddComponent<CameraFollowComponent>();
 
     Entity enemy = registry->CreateEntity();
+    enemy.AddFlags(EntityFlags::Enemy);
     enemy.AddComponent<TransformComponent>(
         glm::vec2(10*16, 10*16),
         glm::vec2(1,1),
@@ -236,9 +236,9 @@ void Game::Update(float deltaTime)
     eventBus->Reset();
 
     registry->GetSystem<DebugDrawCollidersSystem>().SubscribeToEvents(eventBus);
-    registry->GetSystem<DamageSystem>().SubscibeToEvents(eventBus);
     registry->GetSystem<PlayerMovementSystem>().SubscribeToEvents(eventBus);
     registry->GetSystem<PlayerShootingSystem>().SubscribeToEvents(eventBus);
+    registry->GetSystem<ProjectileSystem>().SubscribeToEvents(eventBus);
 
     //Update Systems
     registry->GetSystem<PhysicsSystem>().Update(deltaTime, eventBus);

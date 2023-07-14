@@ -10,19 +10,22 @@ struct PlayerShootingComponent
     std::string spriteAssetId;
     float maxRange;
     float projectileSpeed;
+    int damageAmount;
 
     PlayerShootingComponent(
         int spriteSrcRectX = 0,
         int spriteSrcRectY = 0,
         std::string spriteAssetId = "",
         float maxRange = 0, 
-        float projectileSpeed = 0)
+        float projectileSpeed = 0, 
+        int damageAmount = 0)
     {
         this->spriteSrcRectX = spriteSrcRectX;
         this->spriteSrcRectY = spriteSrcRectY;
         this->spriteAssetId = spriteAssetId;
         this->maxRange = maxRange;
         this->projectileSpeed = projectileSpeed;
+        this->damageAmount = damageAmount;
     }
 };
 

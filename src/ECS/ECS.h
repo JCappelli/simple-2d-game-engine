@@ -51,6 +51,12 @@ class Entity
             return GetId() < rhs.GetId();
         }
 
+
+        void AddFlags(EntityFlags flags);
+        void RemoveFlags(EntityFlags flags);
+        void ClearFlags();
+        bool HasFlags(EntityFlags flags);
+
         template<typename T, typename ...TArgs> void AddComponent(TArgs&& ...args);
         template<typename T> void RemoveComponent();
         template<typename T> bool HasComponent() const;
@@ -128,7 +134,7 @@ class Registry
 
         void AddEntityFlags(Entity entity, EntityFlags flags);
         void RemoveFlags(Entity entity, EntityFlags flags);
-        void ClearFlags(Entity entity, EntityFlags flags);
+        void ClearFlags(Entity entity);
         bool HasFlags(Entity entity, EntityFlags flags);
 
         //Components

@@ -84,7 +84,9 @@ void PlayerShootingSystem::Update(std::unique_ptr<Registry>& registry, const SDL
             bullet.AddComponent<RigidbodyComponent>(
                 bulletVelocity);
             bullet.AddComponent<ProjectileComponent>(
-                playerShooting.maxRange);
+                playerShooting.maxRange,
+                EntityFlags::Enemy, 
+                playerShooting.damageAmount);
             bullet.AddComponent<BoxColliderComponent>(
                 10,
                 10,
