@@ -20,14 +20,14 @@ private:
         const BoxColliderComponent& movingBoxCollider, 
         const std::vector<Entity>& entityList,
         const glm::vec2& moveAxis, 
-        std::unique_ptr<EventBus>& eventBus);
+        std::set<Entity>& collisionsForObject);
     bool CheckCollisionAgainstAllOtherEntitiesInList(    
         const std::vector<Entity>& entities, 
         const Entity& a,
         const BoxColliderComponent& boxA, 
         const TransformComponent& transformA,
         Entity& entityOut,
-        std::unique_ptr<EventBus>& eventBus);
+        std::set<Entity>& collisionsForObject);
 
 public:
     PhysicsSystem();
@@ -44,6 +44,7 @@ PhysicsSystem::PhysicsSystem()
 void PhysicsSystem::Update(float deltaTime, std::unique_ptr<EventBus>& eventBus)
 {
     std::vector<Entity> entities = GetSystemEntities();
+    std::set<Entity> collisonsForObject;
     for (auto i = entities.begin(); i != entities.end(); i++)
     {
         Entity a = *i;
@@ -53,6 +54,7 @@ void PhysicsSystem::Update(float deltaTime, std::unique_ptr<EventBus>& eventBus)
         if (a.HasComponent<RigidbodyComponent>())
         {
             auto& rigidbodyA = a.GetComponent<RigidbodyComponent>();
+            collisonsForObject.clear();
 
             rigidbodyA.simulatedOffset += rigidbodyA.velocity * deltaTime;
 
@@ -63,8 +65,13 @@ void PhysicsSystem::Update(float deltaTime, std::unique_ptr<EventBus>& eventBus)
 
             while (moveX != 0 || moveY != 0)
             {
-                IterateMoveDirection(moveX, a, transformA, boxA, entities, glm::vec2(1,0), eventBus);
-                IterateMoveDirection(moveY, a, transformA, boxA, entities, glm::vec2(0,1), eventBus);
+                IterateMoveDirection(moveX, a, transformA, boxA, entities, glm::vec2(1,0), collisonsForObject);
+                IterateMoveDirection(moveY, a, transformA, boxA, entities, glm::vec2(0,1), collisonsForObject);
+            }
+
+            for(auto collidedEntity : collisonsForObject)
+            {
+                eventBus->EmitEvent<CollisionEvent>(a, collidedEntity);
             }
         }
     }
@@ -77,7 +84,7 @@ void PhysicsSystem::IterateMoveDirection(
     const BoxColliderComponent& movingBoxCollider, 
     const std::vector<Entity>& entityList, 
     const glm::vec2& moveAxis,
-    std::unique_ptr<EventBus>& eventBus)
+    std::set<Entity>& collisionsForObject)
 {
     if (moveValue != 0)
     {
@@ -87,7 +94,7 @@ void PhysicsSystem::IterateMoveDirection(
         int delta = glm::sign<int>(moveValue);
         TransformComponent tempTrans = movingTransform;
         tempTrans.position += moveAxis * static_cast<float>(delta);
-        if  (CheckCollisionAgainstAllOtherEntitiesInList(entityList, movingEntity, movingBoxCollider, tempTrans, otherEntity, eventBus))
+        if  (CheckCollisionAgainstAllOtherEntitiesInList(entityList, movingEntity, movingBoxCollider, tempTrans, otherEntity, collisionsForObject))
         {
             collision = true;
         }
@@ -111,7 +118,7 @@ bool PhysicsSystem::CheckCollisionAgainstAllOtherEntitiesInList(
     const BoxColliderComponent& boxA, 
     const TransformComponent& transformA, 
     Entity& entityOut,
-    std::unique_ptr<EventBus>& eventBus)
+    std::set<Entity>& collisionsForObject)
 {
     for (auto other = entities.begin(); other != entities.end(); other++)
     {
@@ -136,7 +143,10 @@ bool PhysicsSystem::CheckCollisionAgainstAllOtherEntitiesInList(
         if (colliding)
         {
             entityOut = b;
-            eventBus->EmitEvent<CollisionEvent>(a, b);
+            if (collisionsForObject.find(entityOut) == collisionsForObject.end())
+            {
+                collisionsForObject.emplace(entityOut);
+            }
             return true;
         }
     }

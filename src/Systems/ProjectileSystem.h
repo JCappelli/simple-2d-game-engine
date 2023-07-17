@@ -32,8 +32,8 @@ void ProjectileSystem::SubscribeToEvents(std::unique_ptr<EventBus>& eventBus)
 
  void ProjectileSystem::OnCollisionHappened(CollisionEvent& collisionEvent)
  {
-    Entity movingBody = collisionEvent.movingBody;
-    Entity collidedBody = collisionEvent.collidedBody;
+    Entity movingBody = collisionEvent.collisionData.movingBody;
+    Entity collidedBody = collisionEvent.collisionData.collidedBody;
 
     if (movingBody.HasComponent<ProjectileComponent>() && 
         collidedBody.HasComponent<HealthComponent>())
@@ -45,7 +45,7 @@ void ProjectileSystem::SubscribeToEvents(std::unique_ptr<EventBus>& eventBus)
         {
             healthComponent.currentHealth -= projectileComponent.damageAmount;
 
-            Logger::Log("Damaged Done");
+            Logger::Log("Damage Done");
             if (healthComponent.currentHealth <= 0)
             {
                 collidedBody.Kill();
