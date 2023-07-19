@@ -143,9 +143,10 @@ bool PhysicsSystem::CheckCollisionAgainstAllOtherEntitiesInList(
         if (colliding)
         {
             entityOut = b;
-            if (collisionsForObject.find(entityOut) == collisionsForObject.end())
+            auto collisionIter = collisionsForObject.find(entityOut);
+            if (collisionIter == collisionsForObject.end())
             {
-                collisionsForObject.emplace(entityOut);
+                collisionsForObject.emplace_hint(collisionIter, entityOut);
             }
             return true;
         }

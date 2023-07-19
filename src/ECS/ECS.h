@@ -86,7 +86,8 @@ class System
 
 class IPool {
     public:
-        virtual ~IPool() {} // basically makes it an abstract class, need to define the destructor
+        virtual ~IPool() = default; // basically makes it an abstract class, need to define the destructor
+        virtual void RemoveEntityFromPool(int entityId) = 0;
 };
 
 template <typename T>
@@ -94,20 +95,87 @@ class ComponentPool : public IPool
 {
     private:
         std::vector<T> components;
+        int size;
+
+        std::unordered_map<int, int> entityToIndex;
+        std::unordered_map<int, int> indexToEntity;
+
     public:
-        ComponentPool(int size = 100){
-            Resize(size);
+        ComponentPool(int capacity = 100){
+            size = 0;
+            components.resize(capacity);
         }
 
         virtual ~ComponentPool() = default;
 
-        bool isEmpty() const { return components.empty(); }
-        int GetSize() const  { return components.size(); }
-        void Resize(int size) { components.resize(size); }
-        void Clear() { components.clear(); }
-        void Add(T newComponent) { components.push_back(newComponent); }
-        void Set(int index, T componentValue) { components[index] = componentValue; }
-        T& Get(int index) { return static_cast<T&>(components[index]); }
+        bool IsEmpty() const 
+        {
+            return size == 0;
+        }
+
+        int GetSize() const  
+        { 
+            return size; 
+        }
+
+        void Clear() 
+        { 
+            components.clear();
+            entityToIndex.clear();
+            indexToEntity.clear();
+            size = 0;
+        }
+
+        void Set(int entityId, T componentValue) 
+        { 
+            if (entityToIndex.find(entityId) != entityToIndex.end())
+            {
+                int index = entityToIndex[entityId];
+                components[index] = componentValue;
+            }
+            else
+            {
+                int index = size;
+                entityToIndex.emplace(entityId, index);
+                indexToEntity.emplace(index, entityId);
+                if (index >= static_cast<int>(components.capacity()))
+                {
+                    components.resize(size * 2);
+                }
+                components[index] = componentValue;
+                size++;
+            }
+        }
+
+        void Remove(int entityId)
+        {
+            int indexOfRemoved = entityToIndex[entityId];
+            int indexOfLast = size - 1;
+            components[indexOfRemoved] = components[indexOfLast];
+
+            int entityIdOfLast = indexToEntity[indexOfLast];
+            entityToIndex[entityIdOfLast] = indexOfRemoved;
+            indexToEntity[indexOfRemoved] = entityIdOfLast;
+
+            entityToIndex.erase(entityId);
+            indexToEntity.erase(indexOfLast);
+
+            size--;
+        }
+
+        T& Get(int entityId) 
+        { 
+            int index = entityToIndex[entityId];
+            return static_cast<T&>(components[index]); 
+        }
+
+        void RemoveEntityFromPool(int entityId) override
+        {
+            if (entityToIndex.find(entityId) != entityToIndex.end())
+            {
+                Remove(entityId);
+            }
+        }
 };
 
 class Registry
@@ -158,11 +226,6 @@ class Registry
             std::shared_ptr<ComponentPool<T>> componentPool = 
                 std::static_pointer_cast<ComponentPool<T>>(componentPools[componentId]);
 
-            if (entityId >= componentPool->GetSize())
-            {
-                componentPool->Resize(numberOfEntities);
-            }
-
             T newComponent = T(std::forward<TArgs>(args)...);
 
             componentPool->Set(entityId, newComponent);
@@ -177,6 +240,10 @@ class Registry
             const auto entityId = entity.GetId();
 
             entityComponentSignatures[entityId].set(componentId, false);
+            
+            std::shared_ptr<ComponentPool<T>> componentPool = 
+                std::static_pointer_cast<ComponentPool<T>>(componentPools[componentId]);
+            componentPool->Remove(entityId);
         }
 
         template <typename T>
