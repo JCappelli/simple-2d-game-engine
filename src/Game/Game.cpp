@@ -108,9 +108,10 @@ void Game::Setup()
 
 void Game::LoadLevel()
 {
-    //Add Needed Textures
+    //Add Needed Assets
     assetStore->AddTexture(renderer, "tilemap",
         "./assets/sprites/mini-dungeon-tiles.png");
+    assetStore->AddFont("picoFont", "./assets/fonts/pico-8.ttf", 8);
 
     //Load the tilemap
     int tileSize = 16;
@@ -214,6 +215,9 @@ void Game::LoadLevel()
         80,
         0,
         0);
+
+    Entity labelTest = registry->CreateEntity();
+    //TODO: Add Text component
 }
 
 void Game::Run()
