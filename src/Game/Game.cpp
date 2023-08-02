@@ -8,6 +8,7 @@
 #include "../Components/BoxColliderComponent.h"
 #include "../Components/CameraFollowComponent.h"
 #include "../Components/PlayerShootingComponent.h"
+#include "../Components/TextLabelComponent.h"
 #include "../Components/HealthComponent.h"
 #include "../Systems/RenderSystem.h"
 #include "../Systems/AnimationSystem.h"
@@ -17,6 +18,7 @@
 #include "../Systems/PlayerShootingSystem.h"
 #include "../Systems/CameraMovementSystem.h"
 #include "../Systems/ProjectileSystem.h"
+#include "../Systems/RenderTextSystem.h"
 #include "../Debugging/DebugDrawCollidersSystem.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
@@ -38,6 +40,12 @@ void Game::Initialize()
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
     {
         Logger::Error("Failed to Init SDL");
+        return;
+    }
+
+    if (TTF_Init() != 0)
+    {
+        Logger::Error("Failed to Init SDL TTF");
         return;
     }
 
@@ -88,6 +96,7 @@ void Game::Setup()
     registry->AddSystem<CameraMovementSystem>();
     registry->AddSystem<PlayerShootingSystem>();
     registry->AddSystem<ProjectileSystem>();
+    registry->AddSystem<RenderTextSystem>();
     
     //Debug Systems
     registry->AddSystem<DebugDrawCollidersSystem>();
@@ -217,7 +226,12 @@ void Game::LoadLevel()
         0);
 
     Entity labelTest = registry->CreateEntity();
-    //TODO: Add Text component
+    SDL_Color labelColor = {200, 200, 230};
+    labelTest.AddComponent<TextLabelComponent>(
+        glm::vec2(2,2), 
+        "V0.1", 
+        "picoFont", 
+        labelColor);
 }
 
 void Game::Run()
@@ -293,6 +307,7 @@ void Game::Render()
     SDL_RenderClear(renderer);
 
     registry->GetSystem<RenderSystem>().Update(renderer, assetStore, cameraRect);
+    registry->GetSystem<RenderTextSystem>().Update(renderer, assetStore, cameraRect);
     registry->GetSystem<DebugDrawCollidersSystem>().Update(renderer, cameraRect);
 
     SDL_RenderPresent(renderer);
