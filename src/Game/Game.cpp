@@ -20,8 +20,12 @@
 #include "../Systems/ProjectileSystem.h"
 #include "../Systems/RenderTextSystem.h"
 #include "../Debugging/DebugDrawCollidersSystem.h"
+#include "../Debugging/DebugGUIRenderSystem.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <imgui/imgui.h>
+#include <imgui/imgui_impl_sdl2.h>
+#include <imgui/imgui_impl_sdlrenderer2.h>
 #include <glm/glm.hpp>
 #include <fstream>
 #include <string>
@@ -73,6 +77,25 @@ void Game::Initialize()
         return;
     }
 
+    //Init Camera Rect
+    int windowWidth = 0;
+    int windowHeight = 0;
+    SDL_GetWindowSize(window, &windowWidth, &windowHeight);
+    cameraRect = {
+        0,
+        0,
+        windowWidth,
+        windowHeight
+    };
+
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+
+    ImGui_ImplSDL2_InitForSDLRenderer(window, renderer);
+    ImGui_ImplSDLRenderer2_Init(renderer);
+
     isRunning = true;
 
     Setup();
@@ -100,17 +123,7 @@ void Game::Setup()
     
     //Debug Systems
     registry->AddSystem<DebugDrawCollidersSystem>();
-
-    //Init Camera Rect
-    int windowWidth = 0;
-    int windowHeight = 0;
-    SDL_GetWindowSize(window, &windowWidth, &windowHeight);
-    cameraRect = {
-        0,
-        0,
-        windowWidth,
-        windowHeight
-    };
+    registry->AddSystem<DebugGUIRenderSystem>();
 
     LoadLevel();
 }
@@ -254,6 +267,7 @@ void Game::Update(float deltaTime)
     eventBus->Reset();
 
     registry->GetSystem<DebugDrawCollidersSystem>().SubscribeToEvents(eventBus);
+    registry->GetSystem<DebugGUIRenderSystem>().SubscribeToEvents(eventBus);
     registry->GetSystem<PlayerMovementSystem>().SubscribeToEvents(eventBus);
     registry->GetSystem<PlayerShootingSystem>().SubscribeToEvents(eventBus);
     registry->GetSystem<ProjectileSystem>().SubscribeToEvents(eventBus);
@@ -275,6 +289,10 @@ void Game::ProcessInput()
     SDL_Event sdlEvent;
     while (SDL_PollEvent(&sdlEvent))
     {
+        //ImGui event handling
+        ImGui_ImplSDL2_ProcessEvent(&sdlEvent);
+
+        //Game Loop Events
         switch (sdlEvent.type)
         {
             case SDL_QUIT:
@@ -309,12 +327,17 @@ void Game::Render()
     registry->GetSystem<RenderSystem>().Update(renderer, assetStore, cameraRect);
     registry->GetSystem<RenderTextSystem>().Update(renderer, assetStore, cameraRect);
     registry->GetSystem<DebugDrawCollidersSystem>().Update(renderer, cameraRect);
+    registry->GetSystem<DebugGUIRenderSystem>().Update();
 
     SDL_RenderPresent(renderer);
 }
 
 void Game::Destroy()
 {
+    ImGui_ImplSDLRenderer2_Shutdown();
+    ImGui_ImplSDL2_Shutdown();
+    ImGui::DestroyContext();
+
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();

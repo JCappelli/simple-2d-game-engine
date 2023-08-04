@@ -17,6 +17,12 @@ ECHO Comiling Source
 cd build
 
 ::Compile Cpp files
+::Compile Imgui
+for /r ..\lib\imgui %%s in (*.cpp) do (
+ g++ -c -std=c++17 -I..\lib\SDL\Windows\include -Wall %%s -g
+)
+
+::Compile Source
 for /r ..\src %%s in (*.cpp) do (
  g++ -c -std=c++17 -Wall -I..\lib\SDL\Windows\include -I..\lib\Lua\Windows\include -I..\lib\ -I..\lib\sol %%s -g
 )
