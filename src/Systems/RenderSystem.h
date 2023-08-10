@@ -10,12 +10,25 @@
 
 class RenderSystem : public System
 {
+private:
+    struct ZCompare
+    {
+        bool operator()(const Entity& a, const Entity& b) const
+        {
+            const auto spriteA = a.GetComponent<SpriteComponent>();
+            const auto spriteB = b.GetComponent<SpriteComponent>();
+            return (spriteA.zIndex < spriteB.zIndex);
+        }
+    };
+
 public:
     static const int SPRITE_RENDER_SCALE = 2;
     RenderSystem();
     ~RenderSystem();
 
     void Update(SDL_Renderer* renderer, std::unique_ptr<AssetStore>& assetStore, const SDL_Rect& cameraRect);
+
+    std::multiset<Entity, RenderSystem::ZCompare> renderableEntities;
 };
 
 RenderSystem::RenderSystem()
@@ -30,17 +43,24 @@ RenderSystem::~RenderSystem()
 
 void RenderSystem::Update(SDL_Renderer* renderer, std::unique_ptr<AssetStore>& assetStore, const SDL_Rect& cameraRect)
 {
-    //Sort by z index
+    //Sort by z index and add only what's in the camera rect
     std::vector<Entity> entities = GetSystemEntities();
-    std::sort(entities.begin(), entities.end(), [](const Entity& a, const Entity& b)->bool
+    renderableEntities.clear();
+    for(auto entity: entities)
     {
-        const auto spriteA = a.GetComponent<SpriteComponent>();
-        const auto spriteB = b.GetComponent<SpriteComponent>();
-        return (spriteA.zIndex < spriteB.zIndex);
-    });
+        const auto transform = entity.GetComponent<TransformComponent>();
+
+        if (transform.position.x > cameraRect.x || 
+            transform.position.x < cameraRect.x + cameraRect.w ||
+            transform.position.y > cameraRect.y ||
+            transform.position.y < cameraRect.y + cameraRect.h)
+        {
+            renderableEntities.emplace(entity);
+        }
+    }
 
     //render all renderable entities
-    for (auto entity: entities)
+    for (auto entity: renderableEntities)
     {
         const auto transform = entity.GetComponent<TransformComponent>();
         const auto sprite = entity.GetComponent<SpriteComponent>();
