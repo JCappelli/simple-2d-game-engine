@@ -207,26 +207,6 @@ void Game::LoadLevel()
         0);
     player.AddComponent<CameraFollowComponent>();
 
-    Entity enemy = registry->CreateEntity();
-    enemy.AddFlags(EntityFlags::Enemy);
-    enemy.AddComponent<TransformComponent>(
-        glm::vec2(10*16, 10*16),
-        glm::vec2(1,1),
-        0.0);
-    enemy.AddComponent<SpriteComponent>(
-        16,
-        16,
-        1 * 16,
-        9 * 16,
-        2,
-        "tilemap");
-    enemy.AddComponent<HealthComponent>(10);
-    enemy.AddComponent<BoxColliderComponent>(
-        16,
-        16,
-        0,
-        0);
-
     Entity testCollisionEntity = registry->CreateEntity();
     testCollisionEntity.AddComponent<TransformComponent>(
         glm::vec2(16 * 4, 16 * 3),
@@ -327,7 +307,7 @@ void Game::Render()
     registry->GetSystem<RenderSystem>().Update(renderer, assetStore, cameraRect);
     registry->GetSystem<RenderTextSystem>().Update(renderer, assetStore, cameraRect);
     registry->GetSystem<DebugDrawCollidersSystem>().Update(renderer, cameraRect);
-    registry->GetSystem<DebugGUIRenderSystem>().Update();
+    registry->GetSystem<DebugGUIRenderSystem>().Update(registry);
 
     SDL_RenderPresent(renderer);
 }
