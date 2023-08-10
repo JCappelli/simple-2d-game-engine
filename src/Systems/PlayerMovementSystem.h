@@ -4,6 +4,7 @@
 #include "../ECS/ECS.h"
 #include "../Components/PlayerMovementComponent.h"
 #include "../Components/RigidbodyComponent.h"
+#include "../Components/SpriteComponent.h"
 #include "../Events/EventBus.h"
 #include "../Events/InputEvent.h"
 #include <glm/glm.hpp>
@@ -27,6 +28,7 @@ PlayerMovementSystem::PlayerMovementSystem()
 
     RequireComponent<RigidbodyComponent>();
     RequireComponent<PlayerMovementComponent>();
+    RequireComponent<SpriteComponent>();
 }
 
 void PlayerMovementSystem::SubscribeToEvents(std::unique_ptr<EventBus>& eventBus)
@@ -40,12 +42,22 @@ void PlayerMovementSystem::Update()
     {
         auto& rigidBody = entity.GetComponent<RigidbodyComponent>();
         const auto playerMovement = entity.GetComponent<PlayerMovementComponent>();
+        auto& spriteComponent = entity.GetComponent<SpriteComponent>();
 
         glm::vec2 clampedDirection = glm::vec2(0,0);
         float inputAmplitude = glm::clamp<float>(glm::length(inputDirection), 0.0, 1.0);
         if (inputAmplitude > 0)
         {
             clampedDirection = glm::normalize(inputDirection) * inputAmplitude; 
+        }
+
+        if (clampedDirection.x < 0)
+        {
+            spriteComponent.isXFlipped = true;
+        }
+        else if (clampedDirection.x > 0)
+        {
+            spriteComponent.isXFlipped = false;
         }
 
         rigidBody.velocity = clampedDirection * static_cast<float>(playerMovement.movementSpeed);

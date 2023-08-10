@@ -12,6 +12,7 @@ public:
     int zIndex;
     SDL_Rect srcRect;
     std::string spriteAssetId;
+    bool isXFlipped = false;
 
     SpriteComponent(
         int width = 0, 
@@ -19,7 +20,8 @@ public:
         int srcRectX = 0,
         int srcRectY = 0,
         int zIndex = 0, 
-        const std::string& assetId = "")
+        const std::string& assetId = "",
+        bool isXFlipped = false)
     {
         this->width = width;
         this->height = height;
@@ -31,6 +33,7 @@ public:
             width,
             height
         };
+        this->isXFlipped = isXFlipped;
     }
 };
 

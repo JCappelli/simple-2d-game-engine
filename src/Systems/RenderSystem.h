@@ -60,7 +60,7 @@ void RenderSystem::Update(SDL_Renderer* renderer, std::unique_ptr<AssetStore>& a
             &dstRect,
             static_cast<double>(transform.rotation), 
             NULL,
-            SDL_RendererFlip::SDL_FLIP_NONE);
+            sprite.isXFlipped ? SDL_RendererFlip::SDL_FLIP_HORIZONTAL : SDL_RendererFlip::SDL_FLIP_NONE);
     }
 }
 
