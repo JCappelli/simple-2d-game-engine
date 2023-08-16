@@ -11,3 +11,12 @@ config = {
         height = 600
     }
 }
+
+function Testfunc(n)
+    n = n * 2
+    print(n);
+end
+
+Testfunc(5);
+
+print("Native Function Test "..cube(5));

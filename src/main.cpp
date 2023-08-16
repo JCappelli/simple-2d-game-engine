@@ -3,10 +3,17 @@
 
 #include "Game/Game.h"
 
+int nativeCppCubeFunction(int n)
+{
+    return n*n*n;
+}
+
 void TestLua()
 {
     sol::state lua;
     lua.open_libraries(sol::lib::base);
+
+    lua["cube"] = nativeCppCubeFunction;
 
     lua.script_file("./assets/scripts/test.lua");
 
@@ -21,6 +28,8 @@ void TestLua()
 
     std::cout << "Fullscreen table value: " << isFullscreen << std::endl;
     
+    sol::function testFunction = lua["Testfunc"];
+    testFunction(8);
 
     std::cin.get();
 }
