@@ -10,8 +10,18 @@ void TestLua()
 
     lua.script_file("./assets/scripts/test.lua");
 
-    int luaVariable = lua["Basic_variable"];
-    std::cout << "The Value is " << luaVariable << std::endl;
+    int luaVariable = lua["Basic_variable"].get_or(0);
+    std::cout << "The Variable is " << luaVariable << std::endl;
+
+    sol::table config = lua["config"];
+    
+    bool isFullscreen = config["fullscreen"];
+    int screenWidth = config["resolution"]["width"];
+    int screenHeight = config["resolution"]["height"];
+
+    std::cout << "Fullscreen table value: " << isFullscreen << std::endl;
+    
+
     std::cin.get();
 }
 
