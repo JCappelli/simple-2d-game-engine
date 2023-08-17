@@ -1,48 +1,14 @@
 #include <iostream>
-#include <sol/sol.hpp>
 
 #include "Game/Game.h"
 
-int nativeCppCubeFunction(int n)
-{
-    return n*n*n;
-}
-
-void TestLua()
-{
-    sol::state lua;
-    lua.open_libraries(sol::lib::base);
-
-    lua["cube"] = nativeCppCubeFunction;
-
-    lua.script_file("./assets/scripts/test.lua");
-
-    int luaVariable = lua["Basic_variable"].get_or(0);
-    std::cout << "The Variable is " << luaVariable << std::endl;
-
-    sol::table config = lua["config"];
-    
-    bool isFullscreen = config["fullscreen"];
-    int screenWidth = config["resolution"]["width"];
-    int screenHeight = config["resolution"]["height"];
-
-    std::cout << "Fullscreen table value: " << isFullscreen << std::endl;
-    
-    sol::function testFunction = lua["Testfunc"];
-    testFunction(8);
-
-    std::cin.get();
-}
-
 int main(int argc, char *argv[])
 {
-    TestLua();
+    std::unique_ptr<Game> game = std::make_unique<Game>();
 
-    // std::unique_ptr<Game> game = std::make_unique<Game>();
-
-    // game->Initialize();
-    // game->Run();
-    // game->Destroy();
+    game->Initialize();
+    game->Run();
+    game->Destroy();
 
     return 0;
 }

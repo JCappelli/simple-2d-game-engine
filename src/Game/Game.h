@@ -4,6 +4,7 @@
 #include "../ECS/ECS.h"
 #include "../AssetStore/AssetStore.h"
 #include "../Events/EventBus.h"
+#include <sol/sol.hpp>
 
 class Game
 {
@@ -12,6 +13,8 @@ class Game
         SDL_Renderer* renderer = NULL;
         SDL_Rect cameraRect = {};
         bool isRunning = false;
+
+        sol::state lua;
 
         std::unique_ptr<Registry> registry;
         std::unique_ptr<AssetStore> assetStore;
