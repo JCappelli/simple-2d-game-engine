@@ -4,10 +4,8 @@
 #include "../ECS/ECS.h"
 #include "../Events/EventBus.h"
 #include "../Events/InputEvent.h"
-#include "../Components/TransformComponent.h"
-#include "../Components/BoxColliderComponent.h"
-#include "../Components/HealthComponent.h"
-#include "../Components/SpriteComponent.h"
+#include "../Game/GameObjectLoader.h"
+
 #include <imgui/imgui.h>
 #include <imgui/imgui_impl_sdl2.h>
 #include <imgui/imgui_impl_sdlrenderer2.h>
@@ -55,25 +53,7 @@ void DebugGUIRenderSystem::Update(const std::unique_ptr<Registry>& registry)
 
             if (ImGui::Button("Spawn"))
             {
-                Entity enemy = registry->CreateEntity();
-                enemy.AddFlags(EntityFlags::Enemy);
-                enemy.AddComponent<TransformComponent>(
-                    glm::vec2(x*16, y*16),
-                    glm::vec2(1,1),
-                    0.0);
-                enemy.AddComponent<SpriteComponent>(
-                    16,
-                    16,
-                    1 * 16,
-                    9 * 16,
-                    2,
-                    "tilemap");
-                enemy.AddComponent<HealthComponent>(10);
-                enemy.AddComponent<BoxColliderComponent>(
-                    16,
-                    16,
-                    0,
-                    0);
+                GameObjectLoader::LoadEnemyEntity(x * 16, y * 16, registry);
             }
         }
         ImGui::End();
