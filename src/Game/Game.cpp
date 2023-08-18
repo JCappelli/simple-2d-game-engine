@@ -18,6 +18,7 @@
 #include "../Systems/CameraMovementSystem.h"
 #include "../Systems/ProjectileSystem.h"
 #include "../Systems/RenderTextSystem.h"
+#include "../Systems/ScriptExecutionSystem.h"
 #include "../Debugging/DebugDrawCollidersSystem.h"
 #include "../Debugging/DebugGUIRenderSystem.h"
 #include "LevelLoader.h"
@@ -120,13 +121,17 @@ void Game::Setup()
     registry->AddSystem<PlayerShootingSystem>();
     registry->AddSystem<ProjectileSystem>();
     registry->AddSystem<RenderTextSystem>();
+    registry->AddSystem<ScriptExecutionSystem>();
+
+    //Init Script System
+    lua.open_libraries(sol::lib::base);
+    lua.open_libraries(sol::lib::math);
+    
+    registry->GetSystem<ScriptExecutionSystem>().CreateLuaBindings(lua);
     
     //Debug Systems
     registry->AddSystem<DebugDrawCollidersSystem>();
     registry->AddSystem<DebugGUIRenderSystem>();
-
-    //Init Lua State
-    lua.open_libraries(sol::lib::base);
 
     //Init Global Assets
     assetStore->AddFont("picoFont", "./assets/fonts/pico-8.ttf", 8);
@@ -171,6 +176,7 @@ void Game::Update(float deltaTime)
     registry->GetSystem<CameraMovementSystem>().Update(cameraRect);
     registry->GetSystem<PlayerShootingSystem>().Update(registry, cameraRect);
     registry->GetSystem<ProjectileSystem>().Update(deltaTime);
+    registry->GetSystem<ScriptExecutionSystem>().Update(deltaTime);
 
     //Update entities (add/remove)
     registry->Update();

@@ -71,6 +71,8 @@ void GameObjectLoader::LoadEnemyEntity(const int x, const int y, const std::uniq
         16,
         0,
         0);
+    enemy.AddComponent<RigidbodyComponent>(
+        glm::vec2(0,0));
 
     //Load Enemy Script
     sol::load_result enemyScript = lua.load_file("./assets/scripts/enemyscript.lua");
@@ -83,17 +85,26 @@ void GameObjectLoader::LoadEnemyEntity(const int x, const int y, const std::uniq
         Logger::Log("Lua Error on Enemy Script Load: " + errorMessage);
         return;
     }
-    enemyScript.call();
 
-    sol::optional<sol::function> hasUpdateFunction = lua["on_update"];
+    sol::table scriptTable = enemyScript.call();
+    sol::optional<sol::function> hasUpdateFunction = scriptTable["on_update"];
+
     if (hasUpdateFunction != sol::nullopt)
     {
-        sol::function updateFunction = lua["on_update"];
+        sol::function updateFunction = scriptTable["on_update"];
         enemy.AddComponent<ScriptComponent>(updateFunction);
     }
     else
     {
         Logger::Log("No Update Function in Enemy Script!");
+    }
+
+    //Call start function if there is one
+    sol::optional<sol::function> hasStartFunction = scriptTable["on_start"];
+    if (hasStartFunction != sol::nullopt)
+    {
+        sol::function startFunction = scriptTable["on_start"];
+        startFunction.call(enemy);
     }
 }
 
