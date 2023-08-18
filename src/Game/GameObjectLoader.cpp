@@ -8,6 +8,7 @@
 #include "../Components/CameraFollowComponent.h"
 #include "../Components/PlayerMovementComponent.h"
 #include "../Components/PlayerShootingComponent.h"
+#include "../Components/ScriptComponent.h"
 #include "../Components/HealthComponent.h"
 #include <glm/glm.hpp>
 
@@ -49,7 +50,7 @@ void GameObjectLoader::LoadPlayerEntity(const int x, const int y, const std::uni
     player.AddComponent<CameraFollowComponent>();
 }
 
-void GameObjectLoader::LoadEnemyEntity(const int x, const int y, const std::unique_ptr<Registry> &registry)
+void GameObjectLoader::LoadEnemyEntity(const int x, const int y, const std::unique_ptr<Registry> &registry, sol::state& lua)
 {
     Entity enemy = registry->CreateEntity();
     enemy.AddFlags(EntityFlags::Enemy);
@@ -70,6 +71,30 @@ void GameObjectLoader::LoadEnemyEntity(const int x, const int y, const std::uniq
         16,
         0,
         0);
+
+    //Load Enemy Script
+    sol::load_result enemyScript = lua.load_file("./assets/scripts/enemyscript.lua");
+
+    if (enemyScript.valid() == false)
+    {
+        sol::error luaError = enemyScript;
+        std::string errorMessage = luaError.what();
+
+        Logger::Log("Lua Error on Enemy Script Load: " + errorMessage);
+        return;
+    }
+    enemyScript.call();
+
+    sol::optional<sol::function> hasUpdateFunction = lua["on_update"];
+    if (hasUpdateFunction != sol::nullopt)
+    {
+        sol::function updateFunction = lua["on_update"];
+        enemy.AddComponent<ScriptComponent>(updateFunction);
+    }
+    else
+    {
+        Logger::Log("No Update Function in Enemy Script!");
+    }
 }
 
 void GameObjectLoader::LoadCollisionEntity(const int x, const int y, const int width, const int height,  const std::unique_ptr<Registry> &registry)

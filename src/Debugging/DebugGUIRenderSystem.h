@@ -6,6 +6,7 @@
 #include "../Events/InputEvent.h"
 #include "../Game/GameObjectLoader.h"
 
+#include <sol/sol.hpp>
 #include <imgui/imgui.h>
 #include <imgui/imgui_impl_sdl2.h>
 #include <imgui/imgui_impl_sdlrenderer2.h>
@@ -18,7 +19,7 @@ private:
 public:
     DebugGUIRenderSystem() = default;
     void SubscribeToEvents(std::unique_ptr<EventBus>& eventBus);
-    void Update(const std::unique_ptr<Registry>& registry);
+    void Update(const std::unique_ptr<Registry>& registry, sol::state& lua);
 };
 
 void DebugGUIRenderSystem::SubscribeToEvents(std::unique_ptr<EventBus>& eventBus)
@@ -34,7 +35,7 @@ void DebugGUIRenderSystem::OnButtonPressed(InputButtonEvent& event)
     }
 }
 
-void DebugGUIRenderSystem::Update(const std::unique_ptr<Registry>& registry)
+void DebugGUIRenderSystem::Update(const std::unique_ptr<Registry>& registry, sol::state& lua)
 {
     if (isEnabled)
     {
@@ -53,7 +54,7 @@ void DebugGUIRenderSystem::Update(const std::unique_ptr<Registry>& registry)
 
             if (ImGui::Button("Spawn"))
             {
-                GameObjectLoader::LoadEnemyEntity(x * 16, y * 16, registry);
+                GameObjectLoader::LoadEnemyEntity(x * 16, y * 16, registry, lua);
             }
         }
         ImGui::End();

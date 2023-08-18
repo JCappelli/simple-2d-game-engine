@@ -53,7 +53,7 @@ void LevelLoader::LoadLevel(sol::state& lua, const std::string& levelFilePath, c
         }
         else if (layerType == "objectgroup")
         {
-            CreateEntitiesFromObjectLayer(layer, registry);
+            CreateEntitiesFromObjectLayer(layer, registry, lua);
         }
         i++;
     }
@@ -89,7 +89,7 @@ void LevelLoader::CreateEntitiesFromTileLayer(sol::table& layer, const int tiles
     }
 }
 
-void LevelLoader::CreateEntitiesFromObjectLayer(sol::table& layer, const std::unique_ptr<Registry>& registry)
+void LevelLoader::CreateEntitiesFromObjectLayer(sol::table& layer, const std::unique_ptr<Registry>& registry, sol::state& lua)
 {
     sol::table objects = layer["objects"];
     std::string layerName = layer["name"];
@@ -123,7 +123,7 @@ void LevelLoader::CreateEntitiesFromObjectLayer(sol::table& layer, const std::un
             }
             else if (name == "EnemySpawn")
             {
-                GameObjectLoader::LoadEnemyEntity(x, y, registry);
+                GameObjectLoader::LoadEnemyEntity(x, y, registry, lua);
             }
         }
         

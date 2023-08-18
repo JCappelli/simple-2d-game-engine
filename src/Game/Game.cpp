@@ -219,7 +219,7 @@ void Game::Render()
     registry->GetSystem<RenderSystem>().Update(renderer, assetStore, cameraRect);
     registry->GetSystem<RenderTextSystem>().Update(renderer, assetStore, cameraRect);
     registry->GetSystem<DebugDrawCollidersSystem>().Update(renderer, cameraRect);
-    registry->GetSystem<DebugGUIRenderSystem>().Update(registry);
+    registry->GetSystem<DebugGUIRenderSystem>().Update(registry, lua);
 
     SDL_RenderPresent(renderer);
 }
