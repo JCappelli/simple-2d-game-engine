@@ -168,6 +168,7 @@ void Game::Update(float deltaTime)
     registry->GetSystem<PlayerMovementSystem>().SubscribeToEvents(eventBus);
     registry->GetSystem<PlayerShootingSystem>().SubscribeToEvents(eventBus);
     registry->GetSystem<ProjectileSystem>().SubscribeToEvents(eventBus);
+    registry->GetSystem<ScriptExecutionSystem>().SubscribeToEvents(eventBus);
 
     //Update Systems
     registry->GetSystem<PhysicsSystem>().Update(deltaTime, eventBus);

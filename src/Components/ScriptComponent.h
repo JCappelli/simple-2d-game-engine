@@ -5,11 +5,13 @@
 
 struct ScriptComponent
 {
-    sol::function functionality;
+    sol::function updateFunction;
+    sol::function onHitFunction;
 
-    ScriptComponent(sol::function functionality = sol::lua_nil)
+    ScriptComponent(sol::function updateFunction = sol::lua_nil, sol::function onHitFunction = sol::lua_nil)
     {
-        this->functionality = functionality;
+        this->updateFunction = updateFunction;
+        this->onHitFunction = onHitFunction;
     }
 };
 

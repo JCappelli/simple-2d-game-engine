@@ -87,17 +87,22 @@ void GameObjectLoader::LoadEnemyEntity(const int x, const int y, const std::uniq
     }
 
     sol::table scriptTable = enemyScript.call();
+    
     sol::optional<sol::function> hasUpdateFunction = scriptTable["on_update"];
-
+    sol::function updateFunction = sol::lua_nil;
     if (hasUpdateFunction != sol::nullopt)
     {
-        sol::function updateFunction = scriptTable["on_update"];
-        enemy.AddComponent<ScriptComponent>(updateFunction);
+        updateFunction = scriptTable["on_update"];
     }
-    else
+
+    sol::optional<sol::function> hasHitFunction = scriptTable["on_hit"];
+    sol::function hitFunction = sol::lua_nil;
+    if (hasHitFunction != sol::nullopt)
     {
-        Logger::Log("No Update Function in Enemy Script!");
+        hitFunction = scriptTable["on_hit"];
     }
+
+    enemy.AddComponent<ScriptComponent>(updateFunction, hitFunction);
 
     //Call start function if there is one
     sol::optional<sol::function> hasStartFunction = scriptTable["on_start"];
