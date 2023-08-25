@@ -9,7 +9,7 @@
 #include "../Components/ProjectileComponent.h"
 #include "../Events/EventBus.h"
 #include "../Events/InputEvent.h"
-#include <glm/glm.hpp>
+#include <glm.hpp>
 
 class PlayerShootingSystem: public System
 {

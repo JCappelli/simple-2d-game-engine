@@ -1,7 +1,7 @@
 #ifndef ANIMATIONCOMPONENT_H
 #define ANIMATIONCOMPONENT_H
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 struct AnimationComponent
 {

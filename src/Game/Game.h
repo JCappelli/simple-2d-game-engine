@@ -1,10 +1,10 @@
 #ifndef GAME_H
 #define GAME_H
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #include "../ECS/ECS.h"
 #include "../AssetStore/AssetStore.h"
 #include "../Events/EventBus.h"
-#include <sol/sol.hpp>
+#include <sol.hpp>
 
 class Game
 {

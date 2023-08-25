@@ -7,8 +7,8 @@
 #include "../Events/CollisionEvent.h"
 #include "../Debugging/Logger.h"
 
-#include <sol/sol.hpp>
-#include <glm/glm.hpp>
+#include <sol.hpp>
+#include <glm.hpp>
 
 std::tuple<double, double> GetEntityVelocity(Entity entity)
 {

@@ -4,7 +4,7 @@
 #include "../ECS/ECS.h"
 #include "../Components/TransformComponent.h"
 #include "../Components/SpriteComponent.h"
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #include <algorithm>
 #include "../AssetStore/AssetStore.h"
 

@@ -3,9 +3,9 @@
 
 #include "../ECS/ECS.h"
 #include "../AssetStore/AssetStore.h"
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #include <iostream>
-#include <sol/sol.hpp>
+#include <sol.hpp>
 
 class LevelLoader
 {

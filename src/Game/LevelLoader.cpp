@@ -4,7 +4,7 @@
 #include "../Components/SpriteComponent.h"
 
 #include <fstream>
-#include <sol/sol.hpp>
+#include <sol.hpp>
 
 #include "../Debugging/Logger.h"
 #include "GameObjectLoader.h"

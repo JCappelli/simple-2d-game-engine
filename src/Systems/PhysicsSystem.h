@@ -7,7 +7,7 @@
 #include "../Components/TransformComponent.h"
 #include "../Events/EventBus.h"
 #include "../Events/CollisionEvent.h"
-#include <glm/glm.hpp>
+#include <glm.hpp>
 
 class PhysicsSystem: public System
 {

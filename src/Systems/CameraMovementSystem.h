@@ -4,7 +4,7 @@
 #include "../ECS/ECS.h"
 #include "../Components/CameraFollowComponent.h"
 #include "../Components/TransformComponent.h"
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 class CameraMovementSystem: public System
 {

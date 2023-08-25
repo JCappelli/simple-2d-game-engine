@@ -1,7 +1,7 @@
 #ifndef SCRIPTCOMPONENT_H
 #define SCRIPTCOMPONENT_H
 
-#include <sol/sol.hpp>
+#include <sol.hpp>
 
 struct ScriptComponent
 {

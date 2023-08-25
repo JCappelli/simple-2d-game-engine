@@ -7,7 +7,7 @@
 #include "../Components/BoxColliderComponent.h"
 #include "../Components/TransformComponent.h"
 #include "../Systems/RenderSystem.h"
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 class DebugDrawCollidersSystem : public System
 {

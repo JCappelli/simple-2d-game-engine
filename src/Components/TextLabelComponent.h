@@ -1,9 +1,9 @@
 #ifndef TEXTLABELCOMPONENT_H
 #define TEXTLABELCOMPONENT_H
 
-#include <glm/glm.hpp>
+#include <glm.hpp>
 #include <string>
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 struct TextLabelComponent
 {

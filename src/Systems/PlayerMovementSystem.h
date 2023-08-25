@@ -7,7 +7,7 @@
 #include "../Components/SpriteComponent.h"
 #include "../Events/EventBus.h"
 #include "../Events/InputEvent.h"
-#include <glm/glm.hpp>
+#include <glm.hpp>
 
 class PlayerMovementSystem: public System
 {

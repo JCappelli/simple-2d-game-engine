@@ -6,10 +6,10 @@
 #include "../Events/InputEvent.h"
 #include "../Game/GameObjectLoader.h"
 
-#include <sol/sol.hpp>
-#include <imgui/imgui.h>
-#include <imgui/imgui_impl_sdl2.h>
-#include <imgui/imgui_impl_sdlrenderer2.h>
+#include <sol.hpp>
+#include <imgui.h>
+#include <imgui_impl_sdl2.h>
+#include <imgui_impl_sdlrenderer2.h>
 
 class DebugGUIRenderSystem : public System
 {

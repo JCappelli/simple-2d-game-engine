@@ -10,7 +10,7 @@
 #include "../Components/PlayerShootingComponent.h"
 #include "../Components/ScriptComponent.h"
 #include "../Components/HealthComponent.h"
-#include <glm/glm.hpp>
+#include <glm.hpp>
 
 void GameObjectLoader::LoadPlayerEntity(const int x, const int y, const std::unique_ptr<Registry> &registry)
 {

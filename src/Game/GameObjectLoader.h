@@ -2,7 +2,7 @@
 #define GAMEOBJECTLOADER_H
 
 #include "../ECS/ECS.h"
-#include <sol/sol.hpp>
+#include <sol.hpp>
 
 class GameObjectLoader
 {

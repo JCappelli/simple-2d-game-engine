@@ -1,2 +1,4 @@
 build/test.exe
 build/*
+.vs
+generated

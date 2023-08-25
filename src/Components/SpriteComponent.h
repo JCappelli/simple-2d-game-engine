@@ -2,7 +2,7 @@
 #define SPRITECOMPONENT_H
 
 #include<string>
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 struct  SpriteComponent
 {
