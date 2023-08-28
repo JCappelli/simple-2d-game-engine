@@ -149,11 +149,11 @@ void Game::Run()
     Uint64 tickCountAfterLastUpdate = 0;
     while (isRunning)
     {
-        while(!SDL_TICKS_PASSED(SDL_GetTicks64(), tickCountAfterLastUpdate + TARGET_MILLISECS_PER_FRAME));
-
         ProcessInput();
-        Update(static_cast<float>(SDL_GetTicks64() - tickCountAfterLastUpdate) / 1000.0);
+        Update(static_cast<float>(TARGET_MILLISECS_PER_FRAME / 1000.0));
         Render();
+
+        while (!SDL_TICKS_PASSED(SDL_GetTicks64(), tickCountAfterLastUpdate + TARGET_MILLISECS_PER_FRAME));
 
         tickCountAfterLastUpdate = SDL_GetTicks64();
     }
