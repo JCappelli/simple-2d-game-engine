@@ -78,10 +78,11 @@ filter "system:windows"
         "lib/glm",
         "lib/imgui"
     }
+
     libdirs
     {
         "lib/SDL/Windows/lib",
-        "lib/lua"
+        "lib/lua/WindowsLib"
     }
 
     links
